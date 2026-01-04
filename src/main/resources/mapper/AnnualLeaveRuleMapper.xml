@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hrstarter.mapper.AnnualLeaveRuleMapper">
+
+
+    <select id="findRule" resultType="com.example.hrstarter.entity.AnnualLeaveRule">
+        SELECT *
+        FROM annual_leave_rules
+        WHERE
+    <![CDATA[
+            min_years <= #{years}
+          AND ( max_years IS NULL OR max_years > #{years} )
+    ]]>
+    LIMIT 1
+    </select>
+</mapper>

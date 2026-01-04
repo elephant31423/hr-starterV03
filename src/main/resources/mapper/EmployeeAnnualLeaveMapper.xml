@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hrstarter.mapper.EmployeeAnnualLeaveMapper">
+
+    <insert id="insert">
+        INSERT INTO employee_annual_leaves(employee_id, year, total_leave_days, used_leave_days, remaining_leave_days)
+        VALUES (#{employeeId}, #{year}, #{totalLeaveDays}, #{usedLeaveDays}, #{remainingLeaveDays})
+    </insert>
+    <update id="useLeave">
+        UPDATE employee_annual_leaves
+        SET used_leave_days = used_leave_days + #{days}, remaining_leave_days = remaining_leave_days - #{days}
+        WHERE employee_id = #{employeeId} AND year = #{year}
+    </update>
+
+    <select id="findByEmployeeAndYear" resultType="com.example.hrstarter.entity.EmployeeAnnualLeave">
+        SELECT *
+        FROM employee_annual_leaves
+        WHERE employee_id = #{employeeId} AND year = #{year}
+    </select>
+
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.hrstarter.mapper.LeaveRequestMapper">
+
+
+    <insert id="insert">
+
+        INSERT INTO leave_requests(employee_id, start_date, end_date, reason, status)
+        VALUES (#{employeeId}, #{startDate}, #{endDate}, #{reason}, #{status})
+    </insert>
+
+    <select id="findByEmployee" resultType="com.example.hrstarter.entity.LeaveRequest">
+        SELECT *
+        FROM leave_requests
+        WHERE employee_id = #{employeeId}
+    </select>
+</mapper>
