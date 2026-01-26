@@ -6,12 +6,25 @@
 <mapper namespace="com.example.hrstarter.mapper.UserRoleMapper">
 
 
-    <insert id="addRole">
-        INSERT INTO roles(role_key, role_name)
-        VALUES(#{roleKey}, #{roleName})
+    <delete id="deleteUserRolesByUserId">
+        DELETE
+        FROM user_roles
+        WHERE user_id = #{userId}
+    </delete>
 
+    <insert id="batchInsertUserRoles">
+        INSERT INTO user_roles (user_id, role_id)
+        VALUES
+        <foreach collection="roleIds" item="roleId" separator=",">
+            (#{userId}, #{roleId})
+        </foreach>
     </insert>
 
 
-    <delete id="removeRole"></delete>
+
+    <select id="countUsersByRoleId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM user_roles
+        WHERE role_id = #{roleId}
+    </select>
 </mapper>

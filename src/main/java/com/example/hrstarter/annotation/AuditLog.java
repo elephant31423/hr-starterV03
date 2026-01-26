@@ -13,4 +13,7 @@ public @interface AuditLog {
     String entityType();  // ROLE, USER, EMPLOYEE
     String idParam() default "id"; // 從方法參數讀取實體 ID
 
+
+    String performedBy() default "system"; // 執行操作的用戶
+
 }

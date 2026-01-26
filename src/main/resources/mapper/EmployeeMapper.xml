@@ -54,4 +54,25 @@
         FROM employee
     </select>
 
+    <select id="findBirthday" resultType="java.time.LocalDate">
+        SELECT birthday FROM employee WHERE id = #{id}
+    </select>
+    <select id="findByDepartmentId" resultType="com.example.hrstarter.entity.Employee">
+        SELECT *
+        FROM employee e
+        <where>
+            <if test="departmentId != null">
+                AND e.department_id = #{departmentId}
+            </if>
+        </where>
+        order by e.id
+    </select>
+    <select id="findAllActive" resultType="com.example.hrstarter.entity.Employee">
+        SELECT *
+        FROM employee e
+        WHERE e.status =  1
+        order by e.id
+    </select>
+
+
 </mapper>

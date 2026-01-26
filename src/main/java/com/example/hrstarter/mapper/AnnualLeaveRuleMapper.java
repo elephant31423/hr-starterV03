@@ -8,5 +8,6 @@ public interface AnnualLeaveRuleMapper {
 
     AnnualLeaveRule findRule( @Param("years")int years);
 
+    void updateAnnualLeaveRule(AnnualLeaveRule annualLeaveRule);
 
 }

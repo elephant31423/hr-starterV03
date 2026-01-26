@@ -1,6 +1,7 @@
 package com.example.hrstarter.controller;
 
 
+import com.example.hrstarter.dto.AuditLogQueryDTO;
 import com.example.hrstarter.dto.PageData;
 import com.example.hrstarter.entity.AuditLogEntity;
 import com.example.hrstarter.service.AuditLogService;
@@ -25,20 +26,29 @@ public class AuditLogController {
 
     @GetMapping("/logs")
     public PageData<AuditLogEntity> queryLogs(
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String action,
-            @RequestParam(required = false) String entityType,
-            @RequestParam(required = false) String  startDate,
-            @RequestParam(required = false) String  endDate,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            AuditLogQueryDTO queryDTO
     ) {
-        LocalDateTime start = (startDate == null || startDate.isEmpty()) ? null : LocalDateTime.parse(startDate + "T00:00:00");
-        LocalDateTime end   = (endDate == null || endDate.isEmpty()) ? null : LocalDateTime.parse(endDate + "T23:59:59");
 
-       return auditLogService.query(username, action, entityType, start, end, page, size);
+       return auditLogService.query(queryDTO);
 
 
     }
+//    @GetMapping("/logs")
+//    public PageData<AuditLogEntity> queryLogs(
+//            @RequestParam(required = false) String username,
+//            @RequestParam(required = false) String action,
+//            @RequestParam(required = false) String entityType,
+//            @RequestParam(required = false) String  startDate,
+//            @RequestParam(required = false) String  endDate,
+//            @RequestParam(defaultValue = "1") int page,
+//            @RequestParam(defaultValue = "10") int size
+//    ) {
+//        LocalDateTime start = (startDate == null || startDate.isEmpty()) ? null : LocalDateTime.parse(startDate + "T00:00:00");
+//        LocalDateTime end   = (endDate == null || endDate.isEmpty()) ? null : LocalDateTime.parse(endDate + "T23:59:59");
+//
+//       return auditLogService.query(username, action, entityType, start, end, page, size);
+//
+//
+//    }
 
 }

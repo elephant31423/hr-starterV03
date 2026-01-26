@@ -32,6 +32,7 @@ public class RoleController {
     @GetMapping("/{id}")
     public ResponseEntity<Role> get(@PathVariable Long id) {
         Role role = roleService.findById(id);
+        log.info("查詢 roleID {}--{}",id,role);
         return ResponseEntity.ok(role);
     }
     @AuditLog(action = "CREATE", entityType = "ROLE", idParam = "id")
@@ -47,6 +48,7 @@ public class RoleController {
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Role role) {
         try {
             role.setId(id);
+            log.info("修改角色 ID {} 資料: {}", id, role);
             roleService.update(role);
             return ResponseEntity.ok(Map.of("success", true, "message", "角色修改成功"));
         } catch (Exception e) {

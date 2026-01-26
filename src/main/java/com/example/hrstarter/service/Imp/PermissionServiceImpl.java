@@ -1,13 +1,19 @@
 package com.example.hrstarter.service.Imp;
 
+import com.example.hrstarter.dto.PermissionTreeDTO;
 import com.example.hrstarter.entity.Permission;
 import com.example.hrstarter.mapper.PermissionMapper;
 import com.example.hrstarter.service.PermissionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 public class PermissionServiceImpl implements PermissionService {
@@ -36,6 +42,39 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<Permission> selectPermissionCodesByRoleId(Long roleId) {
         return permissionMapper.selectPermissionCodesByRoleId(roleId);
+    }
+
+    @Override
+    public List<PermissionTreeDTO> getAllPermissionTree() {
+        // 1. 取得資料庫所有權限 (平鋪 List)
+        List<Permission> allPermissions = permissionMapper.selectAll( );
+
+        // 2. 轉換為 DTO 並放入 Map 中方便快速查找
+        Map<Long, PermissionTreeDTO> nodeMap = allPermissions.stream()
+                .map(p -> {
+                    PermissionTreeDTO dto = new PermissionTreeDTO();
+                    BeanUtils.copyProperties(p, dto);
+                    return dto;
+                })
+                .collect(Collectors.toMap(PermissionTreeDTO::getId, dto -> dto));
+
+        List<PermissionTreeDTO> tree = new ArrayList<>();
+
+        // 3. 建立層級關係
+        for (PermissionTreeDTO node : nodeMap.values()) {
+            if (node.getParentId() == null || node.getParentId() == 0) {
+                // 沒有父 ID，說明是根節點
+                tree.add(node);
+            } else {
+                // 有父 ID，找到父節點並把自己加入進去
+                PermissionTreeDTO parent = nodeMap.get(node.getParentId());
+                if (parent != null) {
+                    parent.getChildren().add(node);
+                }
+            }
+        }
+
+        return tree;
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.example.hrstarter.service;
 
 
+import com.example.hrstarter.entity.Department;
 import com.example.hrstarter.entity.User;
 
 import java.util.List;
@@ -12,4 +13,9 @@ public interface AuthService {
     List<String> getUserPermissions(Long id);
 
     String refreshToken();
+
+    interface DepartmentService {
+
+        List<Department> getAllDepartments();
+    }
 }

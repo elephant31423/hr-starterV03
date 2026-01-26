@@ -5,8 +5,12 @@ import com.example.hrstarter.entity.AuditLogEntity;
 import com.example.hrstarter.entity.Role;
 import com.example.hrstarter.mapper.AuditLogMapper;
 import com.example.hrstarter.mapper.RoleMapper;
+import com.example.hrstarter.mapper.RolePermissionMapper;
 import com.example.hrstarter.service.RoleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -19,12 +23,11 @@ import java.util.List;
 public class RoleServiceImpl implements RoleService {
 
     private final RoleMapper roleMapper;
-    private final AuditLogMapper auditLogMapper;
-    private final ObjectMapper objectMapper;
-    public RoleServiceImpl(RoleMapper roleMapper, AuditLogMapper auditLogMapper, ObjectMapper objectMapper) {
+    private final RolePermissionMapper rolePermissionMapper;
+    public RoleServiceImpl(RoleMapper roleMapper, RolePermissionMapper rolePermissionMapper) {
         this.roleMapper = roleMapper;
-        this.auditLogMapper = auditLogMapper;
-        this.objectMapper = objectMapper;
+        this.rolePermissionMapper = rolePermissionMapper;
+
     }
 //    @PreAuthorize("hasAuthority('role:view')")
     @Override
@@ -46,7 +49,6 @@ public class RoleServiceImpl implements RoleService {
     @PreAuthorize("hasAuthority('role:create')")
     @Transactional
     @Override
-    @AuditLog(action = "insert" ,entityType = "ROLE")
     public void insert(Role role) {
 
         try {
@@ -66,10 +68,8 @@ public class RoleServiceImpl implements RoleService {
             roleMapper.insert(role);
 
             // 記錄審計日誌
-            recordAuditLog("CREATE", "ROLE", role.getId(), null, role, "SUCCESS", null);
-            log.info("角色創建成功: {}", role.getRoleName());
+
         } catch (Exception e) {
-            recordAuditLog("CREATE", "ROLE", null, null, null, "FAILURE", e.getMessage());
             throw e;
         }
     }
@@ -80,6 +80,7 @@ public class RoleServiceImpl implements RoleService {
         try {
             // 查詢原始角色
             Role oldRole = roleMapper.findById(role.getId());
+            log.info("oldRole: {} ========> newRole: {}", oldRole,role);
             if (oldRole == null) {
                 throw new RuntimeException("角色不存在: " + role.getId());
             }
@@ -88,15 +89,16 @@ public class RoleServiceImpl implements RoleService {
             if (isSystemRole(oldRole.getRoleKey())) {
                 throw new RuntimeException("無法修改系統內置角色");
             }
-
+            rolePermissionMapper.deleteByRoleId(oldRole.getId());
             role.setUpdatedAt(LocalDateTime.now());
+            // 3. 插入新權限
+            if (role.getPermissionIds() != null && !role.getPermissionIds().isEmpty()) {
+                rolePermissionMapper.batchInsert(role.getId(), role.getPermissionIds());
+            }
             roleMapper.update(role);
 
-            // 記錄審計日誌
-            recordAuditLog("UPDATE", "ROLE", role.getId(), oldRole, role, "SUCCESS", null);
-            log.info("角色修改成功: {}", role.getRoleName());
         } catch (Exception e) {
-            recordAuditLog("UPDATE", "ROLE", role.getId(), null, null, "FAILURE", e.getMessage());
+
             throw e;
         }
     }
@@ -125,10 +127,9 @@ public class RoleServiceImpl implements RoleService {
             roleMapper.delete(id);
 
             // 記錄審計日誌
-            recordAuditLog("DELETE", "ROLE", id, role, null, "SUCCESS", null);
             log.info("角色刪除成功: {}", role.getRoleName());
         } catch (Exception e) {
-            recordAuditLog("DELETE", "ROLE", id, null, null, "FAILURE", e.getMessage());
+
             throw e;
         }
     }
@@ -139,23 +140,23 @@ public class RoleServiceImpl implements RoleService {
         return roleKey.equals("ADMIN") || roleKey.equals("SYSTEM");
     }
 
-    private void recordAuditLog(String action, String entityType, Long entityId,
-                                Object oldValue, Object newValue, String status, String errorMessage) {
-        try {
-            AuditLogEntity auditLog = new AuditLogEntity();
-            auditLog.setAction(action);
-            auditLog.setEntityType(entityType);
-            auditLog.setEntityId(entityId);
-            auditLog.setOldValue(oldValue != null ? objectMapper.writeValueAsString(oldValue) : null);
-            auditLog.setNewValue(newValue != null ? objectMapper.writeValueAsString(newValue) : null);
-            auditLog.setStatus(status);
-            auditLog.setErrorMessage(errorMessage);
-            auditLog.setCreatedAt(LocalDateTime.now());
-
-            auditLogMapper.insert(auditLog);
-        } catch (Exception e) {
-            log.error("記錄審計日誌失敗", e);
-        }
-    }
+//    private void recordAuditLog(String action, String entityType, Long entityId,
+//                                Object oldValue, Object newValue, String status, String errorMessage) {
+//        try {
+//            AuditLogEntity auditLog = new AuditLogEntity();
+//            auditLog.setAction(action);
+//            auditLog.setEntityType(entityType);
+//            auditLog.setEntityId(entityId);
+//            auditLog.setOldValue(oldValue != null ? objectMapper.writeValueAsString(oldValue) : null);
+//            auditLog.setNewValue(newValue != null ? objectMapper.writeValueAsString(newValue) : null);
+//            auditLog.setStatus(status);
+//            auditLog.setErrorMessage(errorMessage);
+//            auditLog.setCreatedAt(LocalDateTime.now());
+//
+//            auditLogMapper.insert(auditLog);
+//        } catch (Exception e) {
+//            log.error("記錄審計日誌失敗", e);
+//        }
+//    }
 
 }

@@ -3,6 +3,15 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hrstarter.mapper.AnnualLeaveRuleMapper">
+    <update id="updateAnnualLeaveRule">
+
+        UPDATE employee_annual_leave
+        SET remaining_leave_days = remaining_leave_days - #{days}
+        WHERE employee_id = #{employeeId}
+          AND year = YEAR(CURDATE())
+          AND remaining_leave_days >= #{days}
+
+    </update>
 
 
     <select id="findRule" resultType="com.example.hrstarter.entity.AnnualLeaveRule">

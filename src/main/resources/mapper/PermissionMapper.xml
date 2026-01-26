@@ -6,8 +6,8 @@
 
     <insert id="insert" parameterType="com.example.hrstarter.entity.Permission" useGeneratedKeys="true" keyProperty="id">
 
-        INSERT INTO permissions (permission_code, permission_name, description)
-        VALUES (#{permissionCode}, #{permissionName}, #{description});
+        INSERT INTO permissions (permission_code, permission_name, description,parent_id)
+        VALUES (#{permissionCode}, #{permissionName}, #{description},#{parentId});
 
     </insert>
 
@@ -29,7 +29,7 @@
 
     <select id="selectAll" resultType="com.example.hrstarter.entity.Permission">
 
-        SELECT id, permission_code, permission_name, description, created_at, updated_at
+        SELECT *
         FROM permissions
         ORDER BY permission_code
 

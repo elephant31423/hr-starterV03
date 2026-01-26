@@ -38,8 +38,8 @@ public class AnnualLeaveServiceImpl implements AnnualLeaveService {
         EmployeeAnnualLeave leave = new EmployeeAnnualLeave();
         leave.setEmployeeId(employee.getId());
         leave.setYear(LocalDate.now().getYear());
-        leave.setTotalLeaveDays(rule.getAnnualLeaveDays());
-        leave.setRemainingLeaveDays(rule.getAnnualLeaveDays());
+        leave.setTotalDays(rule.getAnnualLeaveDays());
+        leave.setRemainDays(rule.getAnnualLeaveDays());
 
         leaveMapper.insert(leave);
     }

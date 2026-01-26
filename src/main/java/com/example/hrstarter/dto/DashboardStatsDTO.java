@@ -15,6 +15,10 @@ public class DashboardStatsDTO {
     private Long permissionCount;
     private Long activeUsers;
     private Long inactiveUsers;
+    private Long workingTodayCount; // 今日總上班人數
+    private Long currentlyOnShiftCount; // 當前時段值班人數
+    private long vacationCount;        // 今日休假 (請假表)
+
 
 
 }

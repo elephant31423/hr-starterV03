@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hrstarter.mapper.EmployeeShiftsMapper">
+
+    <insert id="assignShiftToEmployee" parameterType="map">
+        INSERT INTO employee_shifts(employee_id, shift_id, shift_date)
+        VALUES(#{employeeId}, #{shiftId}, #{shiftDate})
+    </insert>
+    <insert id="upsert" parameterType="map">
+        INSERT INTO employee_shifts(employee_id, shift_date, shift_type, on_duty, remark)
+        VALUES(#{employeeId}, #{shiftDate}, #{shiftType}, #{onDuty}, #{remark})
+        ON DUPLICATE KEY UPDATE
+            shift_type = VALUES(shift_type),
+            on_duty = VALUES(on_duty),
+            remark = VALUES(remark)
+    </insert>
+
+    <update id="update">
+        UPDATE employee_shifts
+        SET shift_type = #{shiftType},
+            on_duty = #{onDuty},
+            remark = #{remark}
+        WHERE employee_id = #{employeeId}
+          AND shift_date = #{shiftDate}
+    </update>
+
+    <delete id="removeShiftFromEmployee" parameterType="map">
+        DELETE FROM employee_shifts
+        WHERE employee_id = #{employeeId}
+          AND shift_id = #{shiftId}
+          AND shift_date = #{shiftDate}
+    </delete>
+
+    <select id="findShiftsByEmployeeAndDateRange" resultType="map">
+        SELECT s.id AS shift_id, s.shift_name, s.start_time, s.end_time, es.shift_date
+        FROM shifts s
+                 JOIN employee_shifts es ON s.id = es.shift_id
+        WHERE es.employee_id = #{employeeId}
+          AND es.shift_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY es.shift_date, s.start_time
+    </select>
+    <select id="findByEmployeeAndDateRange" resultType="com.example.hrstarter.dto.ShiftDTO">
+        SELECT
+            id,
+            employee_id as employeeId,
+            shift_date as workDate,  shift_type as shiftType,
+            on_duty as onDuty,
+            remark
+        FROM employee_shifts
+        WHERE employee_id = #{employeeId}
+          AND shift_date BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <select id="findByEmployeeIdAndDate" resultType="com.example.hrstarter.entity.EmployeeShifts">
+        SELECT
+            id,
+            employee_id as employeeId,
+            shift_date as workDate,  shift_type as shiftType,
+            on_duty as onDuty,
+            remark
+        FROM employee_shifts
+        WHERE employee_id = #{employeeId}
+          AND shift_date = #{shiftDate}
+    </select>
+    <select id="countTodayWorker" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT employee_id)
+        FROM employee_shifts
+        WHERE shift_date = CURRENT_DATE;
+    </select>
+    <select id="countTodayOnDuty" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT employee_id)
+        FROM employee_shifts
+        WHERE shift_date = CURRENT_DATE
+        AND on_duty = 1;
+
+    </select>
+
+</mapper>

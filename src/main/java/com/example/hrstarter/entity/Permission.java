@@ -23,6 +23,9 @@ public class Permission {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "parent_id")
+    private Long parentId;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

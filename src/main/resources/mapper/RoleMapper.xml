@@ -24,11 +24,13 @@
         JOIN user_roles ur ON r.id = ur.role_id
         WHERE ur.user_id = #{userId}
     </select>
+
     <select id="countUsersByRoleId" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM user_roles
         WHERE role_id = #{roleId}
     </select>
+
     <select id="findRoleKeysByUserId" resultType="java.lang.String">
         SELECT DISTINCT r.role_key
         FROM users u
@@ -50,7 +52,7 @@
     </insert>
 
     <update id="update" parameterType="com.example.hrstarter.entity.Role">
-        UPDATE rolesfr
+        UPDATE roles
         SET role_key = #{roleKey},
             role_name = #{roleName}
         WHERE id = #{id}

@@ -78,7 +78,7 @@ public class AuthServiceImpl implements AuthService {
     public String loginAndGenerateToken(User user) {
         log.info("開始生成用戶 {} 的 Token", user.getUsername());
         List<String> permissions = getUserPermissions(user.getId());
-        String token = jwtUtil.generateToken(user.getUsername(), user.getId(),permissions);
+        String token = jwtUtil.generateToken(user.getUsername(), user.getId(),user.getEmployeeId(),permissions);
         log.info("用戶 Token 生成成功: {}", user.getUsername());
         return token;
     }

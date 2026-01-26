@@ -1,10 +1,10 @@
 package com.example.hrstarter.service.Imp;
 
+import com.example.hrstarter.dto.PermissionTreeDTO;
+import com.example.hrstarter.dto.UserDetailDTO;
 import com.example.hrstarter.entity.User;
-import com.example.hrstarter.entity.UserPrincipal;
 import com.example.hrstarter.mapper.RoleMapper;
 import com.example.hrstarter.mapper.UserMapper;
-import com.example.hrstarter.service.RoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,8 +18,6 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
-
-
 
     private final RoleMapper roleMapper;
     private final UserMapper userMapper;
@@ -53,16 +51,17 @@ public class UserDetailServiceImpl implements UserDetailsService {
             // 4. 獲取用戶角色 
             String roleKey = roleMapper.findRolesByUserId(user.getId()).getRoleKey();
             log.info("用戶角色: {} - {}", username, roleKey);
-
+            String finalRole = roleKey.startsWith("ROLE_") ? roleKey : "ROLE_" + roleKey;
             // 5. 轉換為 Spring Security 的 GrantedAuthority
-            var authorities =new SimpleGrantedAuthority(roleKey);
+            var authorities =new SimpleGrantedAuthority(finalRole);
 
 
             // 6. 返回 UserDetails
-            return new UserPrincipal(
+            return new PermissionTreeDTO.UserPrincipal(
                     user.getId(),            // ★ 加入 userId
                     user.getUsername(),
                     user.getPassword(),
+                    user.getEmployeeId(),
                     Collections.singleton(authorities)
             );
         } catch (UsernameNotFoundException e) {

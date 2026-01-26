@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hrstarter.mapper.HolidayMapper">
+
+    <select id="findById" resultType="com.example.hrstarter.entity.Holiday">
+        SELECT * FROM holidays WHERE id = #{id}
+    </select>
+
+    <select id="findAll" resultType="com.example.hrstarter.entity.Holiday">
+        SELECT * FROM holidays
+    </select>
+
+    <select id="count" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM holidays
+    </select>
+
+    <select id="findByDateRange" resultType="com.example.hrstarter.entity.Holiday">
+        SELECT *
+        FROM holidays
+        WHERE date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY date
+    </select>
+
+    <insert id="insert" parameterType="com.example.hrstarter.entity.Holiday">
+        INSERT INTO holidays(holiday_name, holiday_date)
+        VALUES(#{holidayName}, #{holidayDate})
+    </insert>
+
+    <update id="update" parameterType="com.example.hrstarter.entity.Holiday">
+        UPDATE holidays
+        SET holiday_name = #{holidayName},
+            holiday_date = #{holidayDate}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM holidays WHERE id = #{id}
+    </delete>
+</mapper>

@@ -20,4 +20,10 @@
         WHERE employee_id = #{employeeId} AND year = #{year}
     </select>
 
+    <select id="findByEmployeeAndDateRange" resultType="com.example.hrstarter.entity.EmployeeAnnualLeave">
+        SELECT *
+        FROM employee_annual_leaves
+        WHERE employee_id = #{employeeId} AND year BETWEEN #{startYear} AND #{endYear}
+    </select>
+
 </mapper>

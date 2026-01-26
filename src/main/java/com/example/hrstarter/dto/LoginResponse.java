@@ -36,6 +36,7 @@ public class LoginResponse {
      */
     private Role roles;
 
+    private Long employeeId;
     /**
      * 用戶權限列表
      */

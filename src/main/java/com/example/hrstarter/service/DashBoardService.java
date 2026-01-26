@@ -4,6 +4,6 @@ import com.example.hrstarter.dto.DashboardStatsDTO;
 
 public interface DashBoardService {
 
-    public DashboardStatsDTO getDashboardStats();
+     DashboardStatsDTO getDashboardStats();
 
 }

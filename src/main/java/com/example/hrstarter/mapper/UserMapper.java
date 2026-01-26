@@ -1,9 +1,9 @@
 package com.example.hrstarter.mapper;
 
+import com.example.hrstarter.dto.UserDetailDTO;
 import com.example.hrstarter.entity.User;
 
 import java.util.List;
-import java.util.Optional;
 
 
 public interface UserMapper {
@@ -11,11 +11,16 @@ public interface UserMapper {
 
     User findById(Long id);
 
+    UserDetailDTO findByIdWithRolesAndPermissions(Long id);
+
+
     List<User> findAll();
 
     void insert(User user);
 
-    void update(User user);
+//    void update(User user);
+
+    int updateBaseInfo(UserDetailDTO user);
 
     void delete(Long id);
 

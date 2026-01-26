@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hrstarter.mapper.DepartmentMapper">
+
+    <insert id="insert" parameterType="com.example.hrstarter.entity.Department" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO departments(name, location, manager_id)
+        VALUES (#{name}, #{location}, #{managerId})
+    </insert>
+
+    <select id="findById" resultType="com.example.hrstarter.entity.Department">
+        SELECT * FROM departments WHERE id = #{id}
+    </select>
+
+    <update id="update" parameterType="com.example.hrstarter.entity.Department">
+        UPDATE departments
+        SET
+            name = #{name},
+            location = #{location},
+            manager_id = #{managerId}
+        WHERE
+            id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM departments WHERE id = #{id}
+    </delete>
+
+    <select id="findAll" resultType="com.example.hrstarter.entity.Department">
+        SELECT * FROM departments
+    </select>
+
+    <select id="count" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM departments
+    </select>
+
+</mapper>
