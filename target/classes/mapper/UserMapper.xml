@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.hrstarter.mapper.UserMapper">
+    <resultMap id="RoleMap" type="com.example.hrstarter.entity.Roles" autoMapping="true">
+        <id property="id" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="roleKey" column="role_key"/>
+    </resultMap>
+
+    <resultMap id="UserDetailDTOFullMap" type="com.example.hrstarter.dto.UserDetailDTO" autoMapping="true">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="fullName" column="full_name"/>
+        <result property="enabled" column="enabled"/>
+        <result property="employeeNo" column="employee_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <collection property="roles" resultMap="RoleWithPermsMap"/>
+    </resultMap>
+
+    <resultMap id="PermissionMap" type="com.example.hrstarter.entity.Permissions">
+        <id property="id" column="perm_id"/>
+        <result property="permissionCode" column="permission_code"/>
+        <result property="permissionName" column="permission_name"/>
+        <result property="parentId" column="perm_parent_id"/>
+    </resultMap>
+
+    <resultMap id="RoleWithPermsMap" type="com.example.hrstarter.entity.Roles">
+        <id property="id" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="roleKey" column="role_key"/>
+        <collection property="permissions" resultMap="PermissionMap"/>
+    </resultMap>
+
+    <select id="findByIdWithRolesAndPermissions" resultMap="UserDetailDTOFullMap">
+        SELECT
+            -- User 基礎資料
+            u.id,
+            u.username,
+            u.full_name,
+            u.enabled,
+            u.employee_id,
+            u.created_at,
+            u.updated_at,
+
+            -- Role 角色資料
+            r.id AS role_id,
+            r.role_name,
+            r.role_key,
+
+            -- Permission 權限資料
+            p.id AS perm_id,
+            p.permission_code,
+            p.permission_name,
+            p.parent_id AS perm_parent_id
+        FROM users u
+                 LEFT JOIN user_roles ur ON u.id = ur.user_id
+                 LEFT JOIN roles r ON ur.role_id = r.id
+                 LEFT JOIN role_permissions rp ON r.id = rp.role_id
+                 LEFT JOIN permissions p ON rp.permission_id = p.id
+        WHERE u.id = #{id}
+    </select>
+
+<!--    <select id="findByIdWithRoles" resultMap="UserDetailMap">-->
+<!--        SELECT u.*,-->
+<!--               r.id AS role_id,-->
+<!--               r.role_name,-->
+<!--               r.role_key-->
+<!--        FROM users u-->
+<!--                 LEFT JOIN user_roles ur ON u.id = ur.user_id-->
+<!--                 LEFT JOIN roles r ON ur.role_id = r.id-->
+<!--        WHERE u.id = #{id}-->
+<!--    </select>-->
+    <!-- 更新用戶資訊 (根據 id ) -->
+
+
+    <update id="updateBaseInfo">
+        UPDATE users
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="fullName != null">full_name = #{fullName},</if>
+            <if test="enabled != null">enabled = #{enabled},</if>
+            <choose>
+                <when test="employeeNo != null and employeeNo != ''">
+                    employee_id = #{employeeNo},
+                </when>
+                <otherwise>
+                    employee_id = NULL,
+                </otherwise>
+            </choose>
+            <if test="password != null and password != ''">password = #{password},</if>
+            version = version + 1,
+            updated_at = NOW(),
+        </set>
+        WHERE id = #{id}
+        <if test="version != null">
+            AND version = #{version}
+        </if>
+    </update>
+
+    <!-- 根據 username 查找 -->
+    <select id="findByUsername" resultType="com.example.hrstarter.entity.User">
+        SELECT *
+        FROM users
+        WHERE username = #{username}
+    </select>
+
+    <!-- 插入用戶 -->
+    <insert id="insert" parameterType="com.example.hrstarter.entity.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users(username, password, full_name, enabled, employee_id)
+        VALUES (#{username}, #{password}, #{fullName}, #{enabled}, #{employeeId})
+    </insert>
+
+    <!-- 根據 id 查找 -->
+    <select id="findById" resultType="com.example.hrstarter.entity.User">
+        SELECT *
+        FROM users
+        WHERE id = #{id}
+    </select>
+
+    <!--查找所有用戶-->
+    <select id="findAll" resultType="com.example.hrstarter.entity.User">
+        SELECT *
+        FROM users
+    </select>
+    <select id="count" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM users
+    </select>
+
+    <!-- 刪除用戶 (根據 id) -->
+    <delete id="delete" parameterType="long">
+        DELETE
+        FROM users
+        WHERE id = #{id}
+    </delete>
+
+
+</mapper>

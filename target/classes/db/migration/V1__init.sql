@@ -1,0 +1,33 @@
+-- Flyway baseline for HR starter
+CREATE TABLE users (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(100) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  full_name VARCHAR(100),
+  enabled TINYINT DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE roles (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  role_key VARCHAR(100) UNIQUE NOT NULL,
+  role_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE user_role (
+  user_id BIGINT NOT NULL,
+  role_id BIGINT NOT NULL,
+  PRIMARY KEY(user_id, role_id)
+);
+
+CREATE TABLE employee (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  emp_no VARCHAR(50) UNIQUE,
+  user_id BIGINT,
+  name VARCHAR(100),
+  department_id BIGINT,
+  title VARCHAR(100),
+  hire_date DATE,
+  status TINYINT DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

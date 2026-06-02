@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hrstarter.mapper.WorkScheduleMapper">
+
+    <insert id="insert" parameterType="com.example.hrstarter.entity.WorkSchedule" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO work_schedules(employee_id, work_date, start_time, end_time, status, notes)
+        VALUES (#{employeeId}, #{workDate}, #{startTime}, #{endTime}, #{status}, #{notes})
+    </insert>
+
+    <delete id="deleteByEmployeeAndDate">
+        DELETE FROM work_schedules
+        WHERE employee_id = #{employeeId} AND work_date = #{workDate}
+    </delete>
+
+    <select id="query" resultType="com.example.hrstarter.entity.WorkSchedule">
+        SELECT *
+        FROM work_schedules
+
+        <where>
+            <if test="employeeId != null">
+                AND employee_id = #{employeeId}
+            </if>
+            <if test="workDate != null">
+                AND work_date = #{workDate}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY work_date DESC, start_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+    <select id="findByEmployeeAndMonth" resultType="com.example.hrstarter.entity.WorkSchedule">
+        SELECT *
+        FROM work_schedules
+        WHERE employee_id = #{employeeId}
+          AND DATE_FORMAT(work_date, '%Y-%m') = #{month}
+        ORDER BY work_date ASC, start_time ASC
+    </select>
+
+
+</mapper>
