@@ -1,16 +1,17 @@
 package com.example.hrstarter.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.hrstarter.dto.employee.EmployeeDTO;
+import com.example.hrstarter.dto.employee.EmployeeQueryDTO;
 import com.example.hrstarter.entity.Employee;
-import com.example.hrstarter.mapper.EmployeeMapper;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 
 public interface EmployeeService {
 
-    List<Employee> findAll();
+    List<EmployeeDTO> findAll();
 
     Employee findById(Long id);
 
@@ -19,4 +20,16 @@ public interface EmployeeService {
     void update(Employee e);
 
     void delete(Long id);
+
+    List<Employee>findByDepartmentId(Long departmentId);
+
+    // 支援分頁與多條件篩選
+    IPage<EmployeeDTO> getEmployeePage(EmployeeQueryDTO queryDTO);
+
+    // 軟刪除邏輯
+    void softDelete(Long id);
+
+    // 恢復在職
+    void restore(Long id);
+
 }

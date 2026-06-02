@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/departments")
+@RequestMapping("/api/departments")
 @Slf4j
 @AllArgsConstructor
 public class DepartmentController {

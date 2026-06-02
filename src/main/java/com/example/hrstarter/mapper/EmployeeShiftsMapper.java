@@ -1,12 +1,10 @@
 package com.example.hrstarter.mapper;
 
-import com.example.hrstarter.dto.EmployeeShiftDTO;
 import com.example.hrstarter.dto.ShiftDTO;
 import com.example.hrstarter.entity.EmployeeShifts;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 

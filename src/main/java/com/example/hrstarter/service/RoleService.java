@@ -1,15 +1,15 @@
 package com.example.hrstarter.service;
 
-import com.example.hrstarter.entity.Role;
+import com.example.hrstarter.entity.Roles;
 
 import java.util.List;
 
 public interface RoleService {
-    Role getRolesByUserId(Long userId);
-    List<Role> findAll();
-    Role findById(Long id);
-    void insert(Role role);
-    void update(Role role);
+    Roles getRolesByUserId(Long userId);
+    List<Roles> findAll();
+    Roles findById(Long id);
+    void insert(Roles role);
+    void update(Roles role);
     void delete(Long id);
 
 }

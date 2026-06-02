@@ -1,7 +1,7 @@
 package com.example.hrstarter.controller;
 
 import com.example.hrstarter.entity.LeaveRequest;
-import com.example.hrstarter.service.LeaveService;
+import com.example.hrstarter.service.LeaveRequestService;
 import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LeaveController {
 
     @Resource
-    private LeaveService leaveService;
+    private LeaveRequestService leaveService;
 
     @PostMapping
     public void apply(@RequestBody LeaveRequest request) {

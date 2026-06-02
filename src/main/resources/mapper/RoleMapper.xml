@@ -5,18 +5,18 @@
 
 <mapper namespace="com.example.hrstarter.mapper.RoleMapper">
 
-    <select id="findById" resultType="com.example.hrstarter.entity.Role">
+    <select id="findById" resultType="com.example.hrstarter.entity.Roles">
         SELECT * FROM roles WHERE id = #{id}
     </select>
 
-    <select id="findByRoleKey" resultType="com.example.hrstarter.entity.Role">
+    <select id="findByRoleKey" resultType="com.example.hrstarter.entity.Roles">
         SELECT * FROM roles WHERE role_key = #{roleKey}
     </select>
 
-    <select id="findAll" resultType="com.example.hrstarter.entity.Role">
+    <select id="findAll" resultType="com.example.hrstarter.entity.Roles">
         SELECT * FROM roles
     </select>
-    <select id="findRolesByUserId" resultType="com.example.hrstarter.entity.Role">
+    <select id="findRolesByUserId" resultType="com.example.hrstarter.entity.Roles">
         SELECT r.id,
                r.role_key  AS roleKey,
                r.role_name AS roleName
@@ -46,15 +46,18 @@
         FROM roles
     </select>
 
-    <insert id="insert" parameterType="com.example.hrstarter.entity.Role">
+    <insert id="insert" parameterType="com.example.hrstarter.entity.Roles">
         INSERT INTO roles(role_key, role_name)
         VALUES(#{roleKey}, #{roleName})
     </insert>
 
-    <update id="update" parameterType="com.example.hrstarter.entity.Role">
+    <update id="update" parameterType="com.example.hrstarter.entity.Roles">
         UPDATE roles
-        SET role_key = #{roleKey},
-            role_name = #{roleName}
+        <set>
+            <if test="roleKey != null">role_key = #{roleKey},</if>
+            <if test="roleName != null">role_name = #{roleName},</if>
+            <if test="description != null">description = #{description},</if>
+        </set>
         WHERE id = #{id}
     </update>
 

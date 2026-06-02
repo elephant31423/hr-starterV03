@@ -2,9 +2,8 @@ package com.example.hrstarter.service.Imp;
 
 import com.example.hrstarter.dto.UserDTO;
 import com.example.hrstarter.dto.UserDetailDTO;
-import com.example.hrstarter.entity.Role;
+import com.example.hrstarter.entity.Roles;
 import com.example.hrstarter.entity.User;
-import com.example.hrstarter.enums.ErrorCode;
 import com.example.hrstarter.exception.BusinessException;
 import com.example.hrstarter.mapper.RoleMapper;
 import com.example.hrstarter.mapper.UserMapper;
@@ -138,7 +137,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Role getRoles(User user) {
+    public Roles getRoles(User user) {
 
         return roleMapper.findRolesByUserId(user.getId());
     }

@@ -2,10 +2,11 @@ package com.example.hrstarter.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class CalendarMonthDTO {
+public class CalendarMonthDTO implements Serializable {
 
     private Long employeeId;
     private int year;

@@ -1,34 +1,34 @@
 package com.example.hrstarter.service.Imp;
 
-import com.example.hrstarter.annotation.AuditLog;
-import com.example.hrstarter.dto.EmployeeShiftDTO;
+import com.example.hrstarter.dto.employee.EmployeeShiftDTO;
 import com.example.hrstarter.dto.ShiftDTO;
 import com.example.hrstarter.entity.EmployeeShifts;
 import com.example.hrstarter.enums.ShiftType;
 import com.example.hrstarter.mapper.EmployeeShiftsMapper;
-import com.example.hrstarter.mapper.ShiftMapper;
+import com.example.hrstarter.service.DashBoardService;
 import com.example.hrstarter.service.EmployeeShiftService;
-import com.example.hrstarter.util.SecurityUtil;
+import com.example.hrstarter.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-
-import static org.springframework.data.util.Optionals.ifPresentOrElse;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class EmployeeShiftServiceImpl implements EmployeeShiftService {
 
-    private final EmployeeShiftsMapper employeeShiftsMapper;
+    @Autowired
+    EmployeeShiftsMapper employeeShiftsMapper;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${shift.edit-buffer-days:0}")
     private int editBufferDays;
@@ -36,8 +36,8 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
     @Override
     @Transactional
     public void assign(EmployeeShiftDTO dto) {
-        Long operatorEmployeeId = SecurityUtil.getEmployeeId();
-        boolean isHr = SecurityUtil.hasRole("HR");
+        Long operatorEmployeeId = SecurityUtils.getEmployeeId();
+        boolean isHr = SecurityUtils.hasRole("HR");
         log.info("指派班表請求 - 操作人: {}, 目標員工: {}, 日期: {}",
                 operatorEmployeeId, dto.getEmployeeId(), dto.getShiftDate());
 
@@ -100,6 +100,10 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
             employeeShiftsMapper.update(record);
         }
 
+        eventPublisher.publishEvent(new ShiftChangedEvent(dto.getShiftDate(),employeeId));
         log.info("班表指派成功");
+    }
+
+    public record ShiftChangedEvent(LocalDate date,Long userId) {
     }
 }

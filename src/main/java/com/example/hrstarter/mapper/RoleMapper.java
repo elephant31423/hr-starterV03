@@ -1,20 +1,19 @@
 package com.example.hrstarter.mapper;
 
-import com.example.hrstarter.entity.Role;
-import org.apache.ibatis.annotations.*;
+import com.example.hrstarter.entity.Roles;
 
 import java.util.List;
 
 public interface RoleMapper {
 
-    Role findById(Long roleId);
-    Role findByRoleKey(String roleKey);
+    Roles findById(Long roleId);
+    Roles findByRoleKey(String roleKey);
     List<String> findRoleKeysByUserId(Long userId);
-    Role findRolesByUserId(Long userId);
+    Roles findRolesByUserId(Long userId);
 
-    List<Role> findAll();
-    void insert(Role role);
-    void update(Role role);
+    List<Roles> findAll();
+    void insert(Roles role);
+    void update(Roles role);
     void delete(Long id);
     int countUsersByRoleId(Long id);
     Long count();

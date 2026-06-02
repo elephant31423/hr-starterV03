@@ -1,9 +1,7 @@
 package com.example.hrstarter.service;
 
 import com.example.hrstarter.dto.CalendarDTO;
-import com.example.hrstarter.dto.CalendarDayDTO;
-import com.example.hrstarter.dto.CalendarMonthDTO;
-import com.example.hrstarter.dto.EmployeeCalendarDTO;
+import com.example.hrstarter.dto.employee.EmployeeCalendarDTO;
 
 import java.time.YearMonth;
 import java.util.List;

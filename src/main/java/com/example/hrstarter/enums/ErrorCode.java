@@ -4,7 +4,11 @@ public enum ErrorCode {
     USER_NOT_FOUND(404, "找不到該使用者"),
     ROLE_ASSIGN_ERROR(400, "角色分配失敗"),
     PARAM_ERROR(400, "參數校驗失敗"),
-    INTERNAL_ERROR(500, "系統內部錯誤");
+    INTERNAL_ERROR(500, "系統內部錯誤"),
+    FORBIDDEN(403, "禁止訪問"),
+    UNAUTHORIZED(401, "未授權訪問"),
+    CONFLICT( 409, "資源衝突");
+
     private final Integer code;
     private final String message;
 

@@ -2,6 +2,7 @@ package com.example.hrstarter.exception;
 
 import com.example.hrstarter.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -74,5 +75,29 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.internalServerError("系統內部錯誤，請稍後重試"));
+    }
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<ApiResponse<?>> handleDuplicateKeyException(DuplicateKeyException ex) {
+        log.warn("資料庫唯一約束衝突: {}", ex.getMessage());
+
+        String message = "資料重複";
+        if (ex.getMessage().contains("employee.email")) {
+            message = "該 Email 已被使用，請更換 Email";
+        } else if (ex.getMessage().contains("employee.emp_no")) {
+            message = "員工編號已存在，請重新輸入";
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT) // 409 Conflict
+                .body(ApiResponse.error(409, message));
+    }
+
+
+    @ExceptionHandler(RateLimitException.class)
+    public ResponseEntity<ApiResponse<?>> handleRateLimit(RateLimitException e) {
+        log.error("🛑 [限流防禦] 觸發攔截: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.TOO_MANY_REQUESTS) // 回傳 429
+                .body(ApiResponse.error(429, e.getMessage()));
     }
 }

@@ -3,9 +3,15 @@ package com.example.hrstarter.service;
 import com.example.hrstarter.dto.AuditLogQueryDTO;
 import com.example.hrstarter.dto.PageData;
 import com.example.hrstarter.entity.AuditLogEntity;
-import org.springframework.data.domain.Page;
 
-import java.time.LocalDateTime;
+
+/**
+ * @ClassName AuditLogService
+ * @Description 审计日志服务接口
+ * @Author chiu
+ * @Date 2026-01-31
+ * @Version 1.0
+ */
 
 public interface AuditLogService {
 

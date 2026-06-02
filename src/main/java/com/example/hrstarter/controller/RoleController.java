@@ -1,10 +1,9 @@
 package com.example.hrstarter.controller;
 
 import com.example.hrstarter.annotation.AuditLog;
-import com.example.hrstarter.entity.Role;
+import com.example.hrstarter.entity.Roles;
 import com.example.hrstarter.service.RoleService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,27 +24,28 @@ public class RoleController {
 
     @GetMapping
     public ResponseEntity<?> list() {
-        List<Role> roles = roleService.findAll();
+        List<Roles> roles = roleService.findAll();
         return ResponseEntity.ok(roles);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Role> get(@PathVariable Long id) {
-        Role role = roleService.findById(id);
+    public ResponseEntity<Roles> get(@PathVariable Long id) {
+        Roles role = roleService.findById(id);
         log.info("查詢 roleID {}--{}",id,role);
         return ResponseEntity.ok(role);
     }
     @AuditLog(action = "CREATE", entityType = "ROLE", idParam = "id")
     @PostMapping
-    public void create(@RequestBody Role role) {
+    public ResponseEntity<?> create(@RequestBody Roles role) {
         roleService.insert(role);
+        return ResponseEntity.ok(Map.of("success", true, "message", "角色新增成功"));
     }
     /**
      * 修改角色
      */
     @AuditLog(action = "UPDATE", entityType = "ROLE", idParam = "id")
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Role role) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Roles role) {
         try {
             role.setId(id);
             log.info("修改角色 ID {} 資料: {}", id, role);

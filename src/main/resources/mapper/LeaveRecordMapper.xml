@@ -4,13 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hrstarter.mapper.LeaveRecordMapper">
 
-    <insert id="insert">
-        INSERT INTO leave_records(employee_id, start_date, end_date, days, reason, status)
-        VALUES (#{employeeId}, #{startDate}, #{endDate}, #{days}, #{reason}, #{status})
-    </insert>
+<!--    <insert id="insert">-->
+<!--        INSERT INTO leave_records(employee_id, start_date, end_date, leave_date, reason, status,leave_type)-->
+<!--        VALUES (#{employeeId}, #{startDate}, #{endDate}, #{leaveDate}, #{reason}, #{status}, #{leaveType})-->
+<!--    </insert>-->
 
     <select id="findByEmployeeAndDateRange"
-            resultType="com.example.hrstarter.entity.LeaveRecords">
+            resultType="com.example.hrstarter.entity.LeaveRecord">
         SELECT
             employee_id,
             leave_date,
@@ -21,10 +21,72 @@
           AND leave_date BETWEEN #{startDate} AND #{endDate}
           AND status = 'APPROVED'
     </select>
+    <select id="selectByEmployeeId" resultType="com.example.hrstarter.entity.LeaveRecord">
+        SELECT *
+        FROM leave_records
+        WHERE employee_id = #{employeeId}
+    </select>
+    <select id="selectByDateRange" resultType="com.example.hrstarter.entity.LeaveRecord">
+        SELECT *
+        FROM leave_records
+        WHERE start_date &gt;= #{startDate} AND end_date &lt;= #{endDate}
+    </select>
+    <select id="selectByDateRangeAndType" resultType="com.example.hrstarter.entity.LeaveRecord">
+        SELECT *
+        FROM leave_records
+        WHERE start_date &gt;= #{startDate}
+          AND end_date &lt;= #{endDate}
+          AND leave_type = #{leaveType}
+    </select>
+    <select id="selectByEmployeeIdAndDate" resultType="com.example.hrstarter.entity.LeaveRecord">
+        SELECT *
+        FROM leave_records
+        WHERE employee_id = #{employeeId}
+          AND ((start_date BETWEEN #{startDate} AND #{endDate})
+               OR (end_date BETWEEN #{startDate} AND #{endDate})
+               OR (start_date &lt;= #{startDate} AND end_date &gt;= #{endDate}))
+    </select>
+    <select id="sumLeaveHours" resultType="java.math.BigDecimal">
+        SELECT SUM(hours)
+        FROM leave_records
+        WHERE employee_id = #{employeeId}
+          AND leave_type = #{leaveType}
+          AND status = 'APPROVED'
+          AND leave_date BETWEEN #{startDate} AND #{endDate}
+    </select>
+    <select id="countLeaveDays" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM leave_records
+        WHERE employee_id = #{employeeId}
+          AND leave_type = #{leaveType}
+          AND status = 'APPROVED'
+          AND leave_date BETWEEN #{startDate} AND #{endDate}
+    </select>
+    <select id="selectByEmployeeIdAndMonth" resultType="com.example.hrstarter.entity.LeaveRecord">
+        SELECT *
+        FROM leave_records
+        WHERE employee_id = #{employeeId}
+          AND DATE_FORMAT(leave_date, '%Y-%m') = #{month}
+    </select>
+    <select id="selectByEmployeeIdsAndDateRange" resultType="com.example.hrstarter.entity.LeaveRecord">
+        SELECT *
+        FROM leave_records
+        WHERE employee_id IN
+        <foreach item="id" collection="employeeIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+          AND leave_date BETWEEN #{startDate} AND #{endDate}
+    </select>
+    <select id="countVacation" resultType="long">
+        SELECT COUNT(DISTINCT employee_id)
+        FROM (
+            SELECT employee_id FROM employee_shifts
+            WHERE shift_date = CURRENT_DATE AND shift_type = 'OFF'
+            UNION
+            SELECT employee_id FROM leave_records
+            WHERE CURRENT_DATE BETWEEN start_date AND end_date
+            ) as total_off;
 
-    <update id="updateStatus">
-        UPDATE leave_records
-        SET status = #{status}
-        WHERE id = #{id}
-    </update>
+    </select>
+
 </mapper>

@@ -3,7 +3,6 @@ package com.example.hrstarter.controller;
 import com.example.hrstarter.annotation.AuditLog;
 import com.example.hrstarter.dto.UserDTO;
 import com.example.hrstarter.dto.UserDetailDTO;
-import com.example.hrstarter.entity.Role;
 import com.example.hrstarter.entity.User;
 import com.example.hrstarter.service.RoleService;
 import com.example.hrstarter.service.UserService;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @RestController

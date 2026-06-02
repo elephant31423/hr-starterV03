@@ -6,15 +6,52 @@
 <mapper namespace="com.example.hrstarter.mapper.LeaveRequestMapper">
 
 
-    <insert id="insert">
 
-        INSERT INTO leave_requests(employee_id, start_date, end_date, reason, status)
-        VALUES (#{employeeId}, #{startDate}, #{endDate}, #{reason}, #{status})
-    </insert>
 
-    <select id="findByEmployee" resultType="com.example.hrstarter.entity.LeaveRequest">
+
+    <select id="selectByEmployeeId" >
         SELECT *
         FROM leave_requests
         WHERE employee_id = #{employeeId}
+    </select>
+    <select id="selectAllWithDetails" resultType="com.example.hrstarter.entity.LeaveRequest">
+        SELECT lr.*, e.name AS employee_name, lt.name AS leave_type_name
+        FROM leave_requests lr
+        JOIN employee e ON lr.employee_id = e.id
+        JOIN leave_type lt ON lr.leave_type_id = lt.id
+        <where>
+            <if test="status != null and status != ''">
+                AND lr.status = #{status}
+            </if>
+            <if test="employeeName != null and employeeName != ''">
+                AND e.name = #{employeeName}
+            </if>
+            <if test="leaveType != null and leaveType != ''">
+                AND lt.code = #{leaveType}
+            </if>
+        </where>
+
+    </select>
+
+    <select id="selectByDateRange" resultType="com.example.hrstarter.entity.LeaveRequest">
+        SELECT *
+        FROM leave_requests
+        WHERE start_date &gt;= #{startDate} AND end_date &lt;= #{endDate}
+    </select>
+    <select id="existsByEmployeeIdAndDate" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM leave_requests
+        WHERE employee_id = #{employeeId}
+          AND ((start_date BETWEEN #{startDate} AND #{endDate})
+               OR (end_date BETWEEN #{startDate} AND #{endDate})
+               OR (start_date &lt;= #{startDate} AND end_date &gt;= #{endDate}))
+    </select>
+    <select id="selectByEmployeeIds" resultType="com.example.hrstarter.entity.LeaveRequest">
+        SELECT *
+        FROM leave_requests
+        WHERE employee_id IN
+        <foreach item="id" collection="employeeIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </select>
 </mapper>

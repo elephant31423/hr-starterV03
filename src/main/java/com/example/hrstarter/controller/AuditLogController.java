@@ -1,6 +1,7 @@
 package com.example.hrstarter.controller;
 
 
+import com.example.hrstarter.annotation.RateLimit;
 import com.example.hrstarter.dto.AuditLogQueryDTO;
 import com.example.hrstarter.dto.PageData;
 import com.example.hrstarter.entity.AuditLogEntity;

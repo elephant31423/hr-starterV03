@@ -1,7 +1,7 @@
 package com.example.hrstarter.controller;
 
 import com.example.hrstarter.dto.ApiResponse;
-import com.example.hrstarter.entity.Permission;
+import com.example.hrstarter.entity.Permissions;
 import com.example.hrstarter.service.PermissionService;
 import com.example.hrstarter.service.RolePermissionService;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ public class RolePermissionController {
     @GetMapping
     @PreAuthorize("hasAuthority('permission:view')")
     public ResponseEntity<?> list() {
-        List<Permission> permissionList = permissionService.findAll();
+        List<Permissions> permissionList = permissionService.findAll();
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(permissionList));
     }

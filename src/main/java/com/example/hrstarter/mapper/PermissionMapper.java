@@ -1,6 +1,6 @@
 package com.example.hrstarter.mapper;
 
-import com.example.hrstarter.entity.Permission;
+import com.example.hrstarter.entity.Permissions;
 
 import java.util.List;
 
@@ -10,21 +10,21 @@ public interface PermissionMapper {
      *
      * @return 權限列表
      */
-    List<Permission> selectAll();
+    List<Permissions> selectAll();
     /**
      * 根據角色 ID 查詢角色的所有權限碼
      *
      * @param roleId 角色 ID
      * @return 權限碼列表
      */
-    List<Permission> selectPermissionCodesByRoleId(Long roleId);
+    List<Permissions> selectPermissionCodesByRoleId(Long roleId);
     /**
      * 根據用戶 ID 查詢用戶的所有權限對象
      *
      * @param userId 用戶 ID
      * @return 權限對象列表
      */
-    List<Permission> selectUserPermissionsByUserId(Long userId);
+    List<Permissions> selectUserPermissionsByUserId(Long userId);
     /**
      * 根據用戶 ID 查詢用戶的所有權限碼
      *
@@ -45,9 +45,9 @@ public interface PermissionMapper {
 
     List<String> selectPermissionCodesByRole(Long role);
 
-    void insert(Permission permission);
+    void insert(Permissions permission);
 
-    void update(Permission permission);
+    void update(Permissions permission);
     void delete(Long id);
 
     Long count();

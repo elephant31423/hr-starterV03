@@ -4,14 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hrstarter.mapper.PermissionMapper">
 
-    <insert id="insert" parameterType="com.example.hrstarter.entity.Permission" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.example.hrstarter.entity.Permissions" useGeneratedKeys="true" keyProperty="id">
 
         INSERT INTO permissions (permission_code, permission_name, description,parent_id)
         VALUES (#{permissionCode}, #{permissionName}, #{description},#{parentId});
 
     </insert>
 
-    <update id="update" parameterType="com.example.hrstarter.entity.Permission" >
+    <update id="update" parameterType="com.example.hrstarter.entity.Permissions" >
 
         UPDATE permissions
         SET
@@ -27,7 +27,7 @@
         DELETE FROM permissions WHERE id = #{id}
     </delete>
 
-    <select id="selectAll" resultType="com.example.hrstarter.entity.Permission">
+    <select id="selectAll" resultType="com.example.hrstarter.entity.Permissions">
 
         SELECT *
         FROM permissions
@@ -35,7 +35,7 @@
 
     </select>
 
-    <select id="selectPermissionCodesByRoleId" resultType="com.example.hrstarter.entity.Permission">
+    <select id="selectPermissionCodesByRoleId" resultType="com.example.hrstarter.entity.Permissions">
 
         SELECT DISTINCT p.permission_code
         FROM roles r
@@ -60,7 +60,7 @@
 
     </select>
 
-    <select id="selectUserPermissionsByUserId" resultType="com.example.hrstarter.entity.Permission">
+    <select id="selectUserPermissionsByUserId" resultType="com.example.hrstarter.entity.Permissions">
 
         SELECT DISTINCT
             p.id,

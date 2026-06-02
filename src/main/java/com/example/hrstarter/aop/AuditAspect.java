@@ -5,6 +5,7 @@ import com.example.hrstarter.dto.PermissionTreeDTO;
 import com.example.hrstarter.entity.AuditLogEntity;
 import com.example.hrstarter.mapper.AuditLogMapper;
 import com.example.hrstarter.mapper.UserMapper;
+import com.example.hrstarter.service.AsyncLogService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.*;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +27,8 @@ public class AuditAspect {
     private final HttpServletRequest request;
     private final ObjectMapper objectMapper;
     private final UserMapper userMapper;
-
-
+    private final ApplicationContext applicationContext;
+    private final AsyncLogService asyncLogService;
     @Pointcut("@annotation(com.example.hrstarter.annotation.AuditLog)")
     public void auditPointcut() {
     }
@@ -39,9 +41,11 @@ public class AuditAspect {
         String action = annotation.action();
         String entityType = annotation.entityType();
         String idParam = annotation.idParam();
+        Long entityId = extractId(joinPoint, idParam);
+        log.info("entityId--{}--idParam--{}",entityId,idParam);
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("principal {}", principal);
+        log.info("now principal {}", principal);
 
         var auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth != null ? auth.getName() : "anonymous";
@@ -58,7 +62,6 @@ public class AuditAspect {
         String ip = request.getRemoteAddr();
         String userAgent = request.getHeader("User-Agent");
 
-        Long entityId = extractId(joinPoint, idParam);
 
         Object oldValue = null;
 
@@ -69,7 +72,11 @@ public class AuditAspect {
 
         try {
             Object result = joinPoint.proceed();
-            // 對於 DELETE，result 可能是 null，我們可以把剛抓到的 oldValue 作為 newValue 存入或標記已刪除
+            // 如果是 CREATE，嘗試從結果中抓取新創建的 ID
+            if ("CREATE".equals(action) && entityId == null) {
+                entityId = tryGetIdFromResult(result, idParam);
+            }
+
             saveLog(userId, username, action, entityType, entityId, oldValue, result, "SUCCESS", null, ip, userAgent);
             return result;
         } catch (Exception ex) {
@@ -78,19 +85,29 @@ public class AuditAspect {
         }
     }
 
-    // 根據 entityType 動態找對應的 Service 查資料 (範例)
+    /**
+     * 通用的舊資料查詢邏輯
+     * 約定：entityType = "EMPLOYEE" -> 尋找 "employeeMapper" 並調用 "selectById"
+     */
     private Object findOldData(String entityType, Long id) {
-        try {
-            if ("USER".equals(entityType)) {
-                return userMapper.findById(id); // 需要在 Aspect 注入 userService
-            }
-            // ... 其他實體類 ...
-        } catch (Exception e) {
-            log.warn("無法獲取舊資料供審計: {}", e.getMessage());
-        }
-        return null;
-    }
+        if (id == null) return null;
 
+        try {
+            // 1. 根據實體名稱推導 Mapper 的 Bean 名稱 (首字母小寫 + Mapper)
+            // 例如: EMPLOYEE -> employeeMapper
+            String mapperName = entityType.toLowerCase() + "Mapper";
+            Object mapper = applicationContext.getBean(mapperName);
+
+            // 2. 利用反射調用 selectById (這是 MyBatis-Plus 的標準方法)
+            // 如果你不是用 MyBatis-Plus，改為你的通用方法名如 "findById"
+            var method = mapper.getClass().getMethod("selectById", java.io.Serializable.class);
+            return method.invoke(mapper, id);
+
+        } catch (Exception e) {
+            log.warn("審計 AOP 自動抓取舊資料失敗 [Entity: {}, ID: {}]: {}", entityType, id, e.getMessage());
+            return null;
+        }
+    }
     private Long extractId(ProceedingJoinPoint joinPoint, String idParam) {
         if (idParam == null || idParam.isEmpty()) return null;
 
@@ -102,19 +119,22 @@ public class AuditAspect {
             Object arg = args[i];
             if (arg == null) continue;
 
-            // 情況 1: 直接匹配參數名 (例如: public void delete(Long id))
-            if (paramNames[i].equals(idParam)) {
+            // 情況 A: 參數名直接匹配 (例如 delete(@PathVariable Long id))
+            if (paramNames != null && idParam.equals(paramNames[i])) {
                 return Long.valueOf(arg.toString());
             }
 
-            // 情況 2: 從物件中提取屬性 (例如: @RequestBody User user)
+            // 情況 B: 物件屬性 (例如 update(@RequestBody Employee e))
             try {
-                // 使用反射嘗試獲取 getId()
-                var method = arg.getClass().getMethod("get" + capitalize(idParam));
+                // 嘗試反射 getXxx()
+                String methodName = "get" + capitalize(idParam);
+                var method = arg.getClass().getMethod(methodName);
                 Object val = method.invoke(arg);
                 if (val != null) return Long.valueOf(val.toString());
-            } catch (Exception ignored) {
-                // 如果物件沒有此屬性，繼續找下一個參數
+            } catch (NoSuchMethodException e) {
+                // 該參數沒有此方法，繼續尋找下一個參數
+            } catch (Exception e) {
+                log.error("從參數提取 ID 失敗: {}", e.getMessage());
             }
         }
         return null;
@@ -129,23 +149,58 @@ public class AuditAspect {
 
         log.info("saveLog userId {}",userId );
         try {
-            AuditLogEntity log = new AuditLogEntity();
-            log.setUserId(userId);
-            log.setUsername(username);
-            log.setAction(action);
-            log.setEntityType(entityType);
-            log.setEntityId(entityId);
-            log.setOldValue(objectMapper.writeValueAsString(oldValue));
-            log.setNewValue(objectMapper.writeValueAsString(newValue));
-            log.setStatus(status);
-            log.setErrorMessage(errorMessage);
-            log.setIpAddress(ip);
-            log.setUserAgent(userAgent);
-
-            auditLogMapper.insert(log);
+            AuditLogEntity audit = new AuditLogEntity();
+            audit.setUserId(userId);
+            audit.setUsername(username);
+            audit.setAction(action);
+            audit.setEntityType(entityType);
+            audit.setEntityId(entityId);
+            audit.setOldValue(oldValue != null ? objectMapper.writeValueAsString(oldValue) : null);
+            audit.setNewValue(newValue != null ? objectMapper.writeValueAsString(newValue) : null);
+            audit.setStatus(status);
+            audit.setErrorMessage(errorMessage);
+            audit.setIpAddress(ip);
+            audit.setUserAgent(userAgent);
+//            auditLogMapper.insert(audit);
+            // 為了不阻塞主線程，改為異步寫入
+            asyncLogService.saveLogAsync(audit);
 
         } catch (Exception e) {
             log.error("審計紀錄寫入失敗: {}", e.getMessage());
+        }
+    }
+
+    private Long tryGetIdFromResult(Object result, String idParam) {
+        if (result == null) return null;
+        try {
+            Object body = result;
+            // 1. 如果是 ResponseEntity，拆開拿 body (ApiResponse)
+            if (result instanceof org.springframework.http.ResponseEntity<?> response) {
+                body = response.getBody();
+            }
+
+            if (body == null) return null;
+
+            // 2. 關鍵點：如果你的 body 是 ApiResponse，ID 在 body.getData() 裡面
+            Object targetObj = body;
+            try {
+                // 嘗試看有沒有 getData() 方法 (針對 ApiResponse 結構)
+                var getDataMethod = body.getClass().getMethod("getData");
+                Object data = getDataMethod.invoke(body);
+                if (data != null) targetObj = data;
+            } catch (NoSuchMethodException e) {
+                // 如果 body 本身就是實體物件，則維持不變
+            }
+
+            // 3. 從目標物件拿 ID (例如 getId())
+            String methodName = "get" + capitalize(idParam);
+            var method = targetObj.getClass().getMethod(methodName);
+            Object val = method.invoke(targetObj);
+
+            return val != null ? Long.valueOf(val.toString()) : null;
+        } catch (Exception e) {
+            log.warn("無法從結果中提取 ID: {}", e.getMessage());
+            return null;
         }
     }
 }

@@ -1,12 +1,12 @@
 package com.example.hrstarter.service.Imp;
 
-import com.example.hrstarter.entity.Permission;
-import com.example.hrstarter.entity.Role;
+import com.example.hrstarter.entity.Permissions;
+import com.example.hrstarter.entity.Roles;
 import com.example.hrstarter.entity.User;
 import com.example.hrstarter.mapper.PermissionMapper;
 import com.example.hrstarter.mapper.RoleMapper;
 import com.example.hrstarter.mapper.UserMapper;
-import com.example.hrstarter.util.JwtUtil;
+import com.example.hrstarter.util.JwtUtils;
 import com.example.hrstarter.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,12 +22,12 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     //TODO
     private final RoleMapper roleMapper;
-    private final JwtUtil jwtUtil;
+    private final JwtUtils jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
     private final PermissionMapper permissionMapper;
 
-    public AuthServiceImpl(UserMapper userMapper, RoleMapper roleMapper, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, PermissionMapper permissionMapper) {
+    public AuthServiceImpl(UserMapper userMapper, RoleMapper roleMapper, JwtUtils jwtUtil, PasswordEncoder passwordEncoder, PermissionMapper permissionMapper) {
         this.userMapper = userMapper;
         this.roleMapper = roleMapper;
 
@@ -102,7 +102,7 @@ public class AuthServiceImpl implements AuthService {
      * @param userId 用戶 ID
      * @return 權限對象列表
      */
-    public List<Permission> getUserPermissionDetails(Long userId) {
+    public List<Permissions> getUserPermissionDetails(Long userId) {
         log.info("查詢用戶權限詳情: userId = {}", userId);
         return permissionMapper.selectUserPermissionsByUserId(userId);
     }
@@ -113,7 +113,7 @@ public class AuthServiceImpl implements AuthService {
      * @param userId 用戶 ID
      * @return 角色碼列表
      */
-    public Role getUserRole(Long userId) {
+    public Roles getUserRole(Long userId) {
         log.info("查詢用戶角色: userId = {}", userId);
         return roleMapper.findRolesByUserId(userId);
     }

@@ -6,4 +6,5 @@ public interface DashBoardService {
 
      DashboardStatsDTO getDashboardStats();
 
+    void clearCache();
 }

@@ -1,16 +1,9 @@
 package com.example.hrstarter.service.Imp;
 
-import com.example.hrstarter.annotation.AuditLog;
-import com.example.hrstarter.entity.AuditLogEntity;
-import com.example.hrstarter.entity.Role;
-import com.example.hrstarter.mapper.AuditLogMapper;
+import com.example.hrstarter.entity.Roles;
 import com.example.hrstarter.mapper.RoleMapper;
 import com.example.hrstarter.mapper.RolePermissionMapper;
 import com.example.hrstarter.service.RoleService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -31,28 +24,28 @@ public class RoleServiceImpl implements RoleService {
     }
 //    @PreAuthorize("hasAuthority('role:view')")
     @Override
-    public Role getRolesByUserId(Long userId) {
+    public Roles getRolesByUserId(Long userId) {
         return roleMapper.findRolesByUserId(userId);
     }
 
     @PreAuthorize("hasAuthority('role:view')")
     @Override
-    public List<Role> findAll() {
+    public List<Roles> findAll() {
         return roleMapper.findAll();
     }
     @PreAuthorize("hasAuthority('role:view')")
     @Override
-    public Role findById(Long id) {
+    public Roles findById(Long id) {
         return roleMapper.findById(id);
     }
 
     @PreAuthorize("hasAuthority('role:create')")
     @Transactional
     @Override
-    public void insert(Role role) {
+    public void insert(Roles role) {
 
         try {
-            Role existing = roleMapper.findByRoleKey(role.getRoleKey());
+            Roles existing = roleMapper.findByRoleKey(role.getRoleKey());
             if(existing!=null){
                 throw new RuntimeException("角色 Key 已存在: " + role.getRoleKey());
             }
@@ -76,10 +69,10 @@ public class RoleServiceImpl implements RoleService {
     @PreAuthorize("hasAuthority('role:update')")
     @Transactional
     @Override
-    public void update(Role role) {
+    public void update(Roles role) {
         try {
             // 查詢原始角色
-            Role oldRole = roleMapper.findById(role.getId());
+            Roles oldRole = roleMapper.findById(role.getId());
             log.info("oldRole: {} ========> newRole: {}", oldRole,role);
             if (oldRole == null) {
                 throw new RuntimeException("角色不存在: " + role.getId());
@@ -108,7 +101,7 @@ public class RoleServiceImpl implements RoleService {
     public void delete(Long id) {
         try {
             // 查詢要刪除的角色
-            Role role = roleMapper.findById(id);
+            Roles role = roleMapper.findById(id);
             if (role == null) {
                 throw new RuntimeException("角色不存在: " + id);
             }

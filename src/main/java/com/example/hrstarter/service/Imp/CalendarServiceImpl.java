@@ -1,6 +1,7 @@
 package com.example.hrstarter.service.Imp;
 
 import com.example.hrstarter.dto.*;
+import com.example.hrstarter.dto.employee.EmployeeCalendarDTO;
 import com.example.hrstarter.entity.Employee;
 import com.example.hrstarter.enums.ShiftType;
 import com.example.hrstarter.mapper.*;
@@ -10,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -140,7 +140,7 @@ public class CalendarServiceImpl implements CalendarService {
                 .forEach(l -> {
                     CalendarDayDTO dto = map.get(l.getLeaveDate());
                     dto.setLeaveType(l.getLeaveType());
-                    dto.setLeaveHours(l.getHours());
+                    dto.setLeaveHours(l.getLeaveHours());
                     dto.setShiftType(ShiftType.OFF);
                     dto.setOnDuty(false);
                     dto.setColor(ColorConstants.LEAVE);
@@ -301,7 +301,7 @@ public class CalendarServiceImpl implements CalendarService {
     private void applyDisplayStyle(CalendarDayDTO dto) {
 
         if (dto.getLeaveType() != null) {
-            dto.setDisplayLabel(dto.getLeaveType().name() + "假");
+            dto.setDisplayLabel(dto.getLeaveType() + "假");
             dto.setColor("#F44336");
             return;
         }

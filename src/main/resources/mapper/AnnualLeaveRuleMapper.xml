@@ -5,23 +5,44 @@
 <mapper namespace="com.example.hrstarter.mapper.AnnualLeaveRuleMapper">
     <update id="updateAnnualLeaveRule">
 
-        UPDATE employee_annual_leave
-        SET remaining_leave_days = remaining_leave_days - #{days}
-        WHERE employee_id = #{employeeId}
+        UPDATE employee_annual_leaves
+        SET remaining_leave_hours = remaining_leave_hours - #{hours}
+        WHERE
+              <![CDATA[
+            employee_id = #{employeeId}
           AND year = YEAR(CURDATE())
-          AND remaining_leave_days >= #{days}
-
+          AND remaining_leave_hours >= #{hours}
+        ]]>
     </update>
 
 
     <select id="findRule" resultType="com.example.hrstarter.entity.AnnualLeaveRule">
         SELECT *
-        FROM annual_leave_rules
+        FROM annual_leave_rule
         WHERE
     <![CDATA[
             min_years <= #{years}
-          AND ( max_years IS NULL OR max_years > #{years} )
+          AND (max_years IS NULL OR max_years > #{years})
     ]]>
     LIMIT 1
     </select>
+
+    <select id="selectOne" resultType="com.example.hrstarter.entity.AnnualLeaveRule">
+        SELECT days
+        FROM annual_leave_rule
+        WHERE
+                  <![CDATA[     #{seniorityYears} >= min_years
+          AND #{seniorityYears} < max_years
+        ]]>
+    </select>
+
+    <select id="getDaysBySeniority" resultType="java.lang.Integer">
+        SELECT hours
+        FROM annual_leave_rule
+        WHERE       <![CDATA[  #{seniorityYears} >= min_years
+          AND (max_years IS NULL OR #{seniorityYears} < max_years)]]>
+
+        LIMIT 1
+    </select>
+
 </mapper>

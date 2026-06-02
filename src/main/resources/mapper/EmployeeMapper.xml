@@ -24,27 +24,79 @@
     <!-- 更新員工資訊 (根據 id) -->
     <update id="update" parameterType="com.example.hrstarter.entity.Employee">
         UPDATE employee
-        SET
-            name = #{ name},
-            phone = #{phone},
-            email = #{email},
-            title = #{title},
-            emp_no = #{empNo},
-            status = #{status}
-        WHERE
-            id = #{id}
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="status != null">status = #{status},</if>
+
+            <choose>
+                <when test="status == 0">
+                    <if test="resignDate != null">
+                        resign_date = #{resignDate},
+                    </if>
+                    <if test="resignDate == null">
+                        resign_date = CURRENT_DATE,
+                    </if>
+                </when>
+                <when test="status == 1">
+                    resign_date = NULL,
+                </when>
+            </choose>
+            updated_at = CURRENT_TIMESTAMP
+        </set>
+           WHERE  id = #{id}
     </update>
 
     <!-- 刪除員工 (根據 id) -->
-    <delete id="delete" parameterType="long">
-        DELETE FROM employee WHERE id = #{id}
-    </delete>
+    <update id="delete" parameterType="long">
+        UPDATE employee
+        SET status = 0,
+            resign_date = IFNULL(resign_date, CURRENT_DATE),
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
 
     <!-- 查找所有員工 -->
-    <select id="findAll" resultType="com.example.hrstarter.entity.Employee">
-        SELECT * FROM employee
+    <select id="findAll" resultType="com.example.hrstarter.dto.employee.EmployeeDTO">
+        SELECT
+            e.id,
+            e.emp_no AS empNo,
+            e.user_id AS userId,
+            e.name,
+            e.department_id AS departmentId,
+            d.name AS departmentName, e.title,
+            e.hire_date AS hireDate,
+            e.status,
+            e.email,
+            e.address,
+            e.phone,
+            e.birthday,
+            e.resign_date AS resignDate,
+            e.created_at AS createdAt,
+            e.updated_at AS updatedAt
+        FROM employee e
+                 LEFT JOIN departments d ON e.department_id = d.id
+        where e.status = 1
+        ORDER BY e.id DESC
     </select>
 
+    <select id="findByParams" resultType="com.example.hrstarter.entity.Employee">
+        SELECT
+        e.*, d.name AS departmentName
+        FROM employee e
+        LEFT JOIN departments d ON e.department_id = d.id
+        <where>
+            <if test="query.name != null and query.name != ''">
+                AND e.name LIKE CONCAT('%', #{query.name}, '%')
+            </if>
+            <if test="query.departmentId != null">
+                AND e.department_id = #{query.departmentId}
+            </if>
+            <if test="query.status != null">
+                AND e.status = #{query.status}
+            </if>
+        </where>
+        ORDER BY e.created_at DESC
+    </select>
     <!-- 根據員工姓名模糊查找 -->
     <select id="findByEmployeeName" resultType="com.example.hrstarter.entity.Employee">
         SELECT * FROM employee WHERE full_name LIKE CONCAT('%', #{fullName}, '%')

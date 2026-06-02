@@ -1,7 +1,6 @@
 package com.example.hrstarter.dto;
 
-import com.example.hrstarter.entity.Permission;
-import com.example.hrstarter.entity.Role;
+import com.example.hrstarter.entity.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,7 +33,7 @@ public class LoginResponse {
     /**
      * 用戶角色列表
      */
-    private Role roles;
+    private Roles roles;
 
     private Long employeeId;
     /**

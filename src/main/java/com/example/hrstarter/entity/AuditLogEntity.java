@@ -1,55 +1,53 @@
 package com.example.hrstarter.entity;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@Entity
-@Table(name = "audit_logs")
+
+@TableName("audit_logs")
 public class AuditLogEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @Column(name = "user_id")
+    @TableField("user_id")
     private Long userId;
 
-    @Column(name = "username")
+    @TableField("username")
     private String username;
 
-    @Column(name = "action")
+    @TableField("action")
     private String action; // CREATE, UPDATE, DELETE
 
-    @Column(name = "entity_type")
+    @TableField("entity_type")
     private String entityType; // ROLE, USER, EMPLOYEE
 
-    @Column(name = "entity_id")
+    @TableField("entity_id")
     private Long entityId;
 
-    @Column(name = "old_value", columnDefinition = "JSON")
+    @TableField(value = "old_value", typeHandler = JacksonTypeHandler.class)
     private String oldValue;
 
-    @Column(name = "new_value", columnDefinition = "JSON")
+    @TableField(value = "new_value", typeHandler = JacksonTypeHandler.class)
     private String newValue;
 
-    @Column(name = "status")
+    @TableField("status")
     private String status; // SUCCESS, FAILURE
 
-    @Column(name = "error_message")
+    @TableField("error_message")
     private String errorMessage;
 
-    @Column(name = "ip_address")
+    @TableField("ip_address")
     private String ipAddress;
 
-    @Column(name = "user_agent")
+    @TableField("user_agent")
     private String userAgent;
 
-    @Column(name = "created_at")
+    @TableField(value ="created_at",fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
+
 }

@@ -3,10 +3,11 @@ package com.example.hrstarter.dto;
 import com.example.hrstarter.enums.ShiftType;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
-public class ShiftDTO {
+public class ShiftDTO implements Serializable {
 
 
         private Long id;

@@ -1,9 +1,6 @@
 package com.example.hrstarter.service;
 
-import com.example.hrstarter.dto.EmployeeShiftDTO;
-import com.example.hrstarter.enums.ShiftType;
-
-import java.util.Date;
+import com.example.hrstarter.dto.employee.EmployeeShiftDTO;
 
 public interface EmployeeShiftService {
 

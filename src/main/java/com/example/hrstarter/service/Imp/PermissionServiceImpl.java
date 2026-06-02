@@ -1,7 +1,7 @@
 package com.example.hrstarter.service.Imp;
 
 import com.example.hrstarter.dto.PermissionTreeDTO;
-import com.example.hrstarter.entity.Permission;
+import com.example.hrstarter.entity.Permissions;
 import com.example.hrstarter.mapper.PermissionMapper;
 import com.example.hrstarter.service.PermissionService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class PermissionServiceImpl implements PermissionService {
      */
     @PreAuthorize("hasAuthority('role:view')")
     @Override
-    public List<Permission> findAll() {
+    public List<Permissions> findAll() {
 //        log.info("獲取所有權限");
         return permissionMapper.selectAll();
     }
@@ -40,14 +40,14 @@ public class PermissionServiceImpl implements PermissionService {
      */
 //    @PreAuthorize("hasAuthority('role:view')")
     @Override
-    public List<Permission> selectPermissionCodesByRoleId(Long roleId) {
+    public List<Permissions> selectPermissionCodesByRoleId(Long roleId) {
         return permissionMapper.selectPermissionCodesByRoleId(roleId);
     }
 
     @Override
     public List<PermissionTreeDTO> getAllPermissionTree() {
         // 1. 取得資料庫所有權限 (平鋪 List)
-        List<Permission> allPermissions = permissionMapper.selectAll( );
+        List<Permissions> allPermissions = permissionMapper.selectAll( );
 
         // 2. 轉換為 DTO 並放入 Map 中方便快速查找
         Map<Long, PermissionTreeDTO> nodeMap = allPermissions.stream()
@@ -96,7 +96,7 @@ public class PermissionServiceImpl implements PermissionService {
      * @param userId 用戶 ID
      * @return 權限對象列表
      */
-    public List<Permission> getUserPermissionDetails(Long userId) {
+    public List<Permissions> getUserPermissionDetails(Long userId) {
         log.info("查詢用戶權限詳情: userId = {}", userId);
         return permissionMapper.selectUserPermissionsByUserId(userId);
     }
@@ -105,7 +105,7 @@ public class PermissionServiceImpl implements PermissionService {
      *
      * @return 權限列表
      */
-    public List<Permission> getAllPermissions() {
+    public List<Permissions> getAllPermissions() {
         log.info("查詢所有權限");
         return permissionMapper.selectAll();
     }

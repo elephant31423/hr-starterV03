@@ -1,7 +1,5 @@
 package com.example.hrstarter.service.Imp;
 
-import com.example.hrstarter.dto.PermissionTreeDTO;
-import com.example.hrstarter.entity.Permission;
 import com.example.hrstarter.mapper.RolePermissionMapper;
 import com.example.hrstarter.service.RolePermissionService;
 import lombok.RequiredArgsConstructor;
