@@ -104,6 +104,6 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
         log.info("班表指派成功");
     }
 
-    public record ShiftChangedEvent(LocalDate date,Long userId) {
+    public record ShiftChangedEvent(LocalDate date, Long employeeId) {
     }
 }

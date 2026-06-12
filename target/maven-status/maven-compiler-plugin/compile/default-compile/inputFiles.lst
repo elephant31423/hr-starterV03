@@ -43,11 +43,13 @@ D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\entity\Holiday.ja
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\PermissionTreeDTO.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\exception\RateLimitException.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\CalendarService.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\LeaveApprovalService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\controller\RolePermissionController.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\AuditLogMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\entity\EmployeeShifts.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\AuthService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\LeaveRequestService.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\NotificationService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\PermissionMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\controller\LeaveTypeController.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\entity\LeaveTypeEntity.java
@@ -59,11 +61,13 @@ D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\entity\Employee.j
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\UserServiceImpl.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\EmployeeService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\WorkScheduleServiceImpl.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\controller\LeaveApprovalController.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\LeaveTypeService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\employee\EmployeeQueryDTO.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\CalendarServiceImpl.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\config\AsyncConfig.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\config\MybatisPlusConfig.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\entity\LeaveApprovalStep.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\LoginResponse.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\config\MybatisPlusHandler.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\controller\CalendarController.java
@@ -71,6 +75,7 @@ D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\controller\Employ
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\controller\LeaveRecordController.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\LeaveRecordMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\EmployeeAnnualLeaveDTO.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\LeaveApprovalStepMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\enums\ShiftType.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\EmployeeAnnualLeaveService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\employee\EmployeeShiftDTO.java
@@ -82,6 +87,7 @@ D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\util\EmployeeCont
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\controller\AuthController.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\PageData.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\PermissionService.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\NotificationServiceImpl.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\LeaveCalculation\LeaveCalculationStrategy.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\DashBoardService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\LeaveRequestMapper.java
@@ -98,6 +104,8 @@ D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\employee\Empl
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\AsyncLogServiceImpl.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\CalendarDayDTO.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\ShiftDTO.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\controller\NotificationController.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\LeaveApprovalActionDTO.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\util\PageUtils.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\util\EmployeeConverter.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\RoleMapper.java
@@ -124,7 +132,9 @@ D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\UserMapper
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\EmployeeShiftsMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\RoleServiceImpl.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\filter\EmployeeContextInterceptor.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\NotificationMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\RolePermissionServiceImpl.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\LeaveApprovalServiceImpl.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\entity\Permissions.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\LeaveCalculationService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\exception\GlobalExceptionHandler.java

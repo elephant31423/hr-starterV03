@@ -6,6 +6,7 @@ import com.example.hrstarter.dto.LeaveRequestDTO;
 import com.example.hrstarter.entity.LeaveRequest;
 import com.example.hrstarter.enums.ErrorCode;
 import com.example.hrstarter.service.LeaveRequestService;
+import com.example.hrstarter.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,6 +29,9 @@ public class LeaveRequestController {
     @Autowired
     private LeaveRequestService leaveRequestService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     /**
      * 提交請假申請
      */
@@ -39,6 +43,7 @@ public class LeaveRequestController {
 
 
         leaveRequestService.submitLeaveRequest(leaveRequest);
+        notifyHrLeavePending();
         return ApiResponse.success("請假申請提交成功", leaveRequest);
 
     }
@@ -196,6 +201,16 @@ public class LeaveRequestController {
 
         // 核心邏輯應在 Service 中判斷：1. 剩餘時數是否足夠 2. 是否重複申請 3. 扣除特休
         leaveRequestService.submitLeaveRequest(leaveRequest);
+        notifyHrLeavePending();
         return ApiResponse.success("請假申請已提交", leaveRequest);
+    }
+
+    private void notifyHrLeavePending() {
+        notificationService.notifyRole(
+                "HR",
+                "LEAVE_PENDING",
+                "新的待辦事項",
+                "有新的請假申請需要處理。"
+        );
     }
 }

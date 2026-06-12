@@ -1,6 +1,7 @@
 package com.example.hrstarter.listener;
 
 import com.example.hrstarter.service.Imp.EmployeeShiftServiceImpl;
+import com.example.hrstarter.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -12,21 +13,23 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class NotificationEventListener {
-
     private final SimpMessagingTemplate messagingTemplate;
+    private final NotificationService notificationService;
 
     @EventListener
     public void handleShiftChanged(EmployeeShiftServiceImpl.ShiftChangedEvent event) {
-        // 封裝通知對象
-        Map<String, String> msg = new HashMap<>();
-        msg.put("title", "班表變動通知");
-        msg.put("message", "日期 " + event.date() + " 的班表已被管理員更新。");
-        String targetId = event.userId().toString();
-        System.out.println("目標用戶ID: " + targetId);
-        // 推送給所有訂閱了 /topic/notifications 的用戶
-//        messagingTemplate.convertAndSend("/topic/notifications", msg);
-        messagingTemplate.convertAndSendToUser(targetId , "/topic/notifications", msg);        messagingTemplate.convertAndSendToUser("HR"
-                , "/topic/notifications", msg);
+        String title = "班表已更新";
+        String message = "您的 " + event.date() + " 班表已更新，請查看最新排班。";
 
+        notificationService.notifyEmployee(event.employeeId(), "SHIFT_UPDATED", title, message);
+
+        Map<String, String> msg = new HashMap<>();
+        msg.put("title", title);
+        msg.put("message", message);
+        messagingTemplate.convertAndSendToUser(
+                event.employeeId().toString(),
+                "/topic/notifications",
+                msg
+        );
     }
 }

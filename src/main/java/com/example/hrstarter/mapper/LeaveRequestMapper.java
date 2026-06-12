@@ -57,7 +57,7 @@ public interface LeaveRequestMapper extends BaseMapper<LeaveRequest> {
      *
      * @return 數量
      */
-    @Select("SELECT COUNT(*) FROM leave_requests WHERE status = 'PENDING'")
+    @Select("SELECT COUNT(*) FROM leave_requests WHERE status LIKE 'PENDING%'")
     Integer countPendingRequests();
 
     /**

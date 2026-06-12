@@ -100,4 +100,8 @@ public interface LeaveRequestService extends IService<LeaveRequest> {
     String validateLeaveRequest(LeaveRequest leaveRequest);
 
     void applyLeave(LeaveRequest request);
+
+    void updateApprovalStatus(Long leaveRequestId, String status);
+
+    void finalizeApprovedLeave(Long leaveRequestId, Long approvedBy);
 }
