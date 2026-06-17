@@ -1,10 +1,17 @@
+com\example\hrstarter\entity\SystemSetting.class
 com\example\hrstarter\mapper\LeaveApprovalStepMapper.class
+com\example\hrstarter\mapper\SystemSettingMapper.class
+com\example\hrstarter\dto\system\SecuritySettingsDTO.class
 com\example\hrstarter\entity\LeaveApprovalStep.class
+com\example\hrstarter\controller\SystemSettingController.class
 com\example\hrstarter\service\Imp\LeaveApprovalServiceImpl.class
+com\example\hrstarter\dto\system\BasicSettingsDTO.class
 com\example\hrstarter\mapper\NotificationMapper.class
 com\example\hrstarter\service\NotificationService.class
+com\example\hrstarter\service\Imp\SystemSettingServiceImpl.class
 com\example\hrstarter\service\LeaveApprovalService.class
 com\example\hrstarter\controller\LeaveApprovalController.class
 com\example\hrstarter\dto\LeaveApprovalActionDTO.class
+com\example\hrstarter\service\SystemSettingService.class
 com\example\hrstarter\controller\NotificationController.class
 com\example\hrstarter\service\Imp\NotificationServiceImpl.class

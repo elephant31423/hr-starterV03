@@ -40,6 +40,11 @@ public class EmployeeController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(employeeList));
     }
 
+    @GetMapping("/unbound")
+    public ResponseEntity<?> unbound() {
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(employeeService.findUnbound()));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable Long id) {
         Employee employee = employeeService.findById(id);
@@ -87,4 +92,3 @@ public class EmployeeController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(PageResult.of(pageData)));
     }
 }
-

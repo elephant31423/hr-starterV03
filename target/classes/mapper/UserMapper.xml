@@ -15,6 +15,7 @@
         <result property="username" column="username"/>
         <result property="fullName" column="full_name"/>
         <result property="enabled" column="enabled"/>
+        <result property="employeeId" column="employee_id"/>
         <result property="employeeNo" column="employee_id"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
@@ -84,8 +85,8 @@
             <if test="fullName != null">full_name = #{fullName},</if>
             <if test="enabled != null">enabled = #{enabled},</if>
             <choose>
-                <when test="employeeNo != null and employeeNo != ''">
-                    employee_id = #{employeeNo},
+                <when test="employeeId != null">
+                    employee_id = #{employeeId},
                 </when>
                 <otherwise>
                     employee_id = NULL,
@@ -108,6 +109,12 @@
         WHERE username = #{username}
     </select>
 
+    <select id="findByEmployeeId" resultType="com.example.hrstarter.entity.User">
+        SELECT *
+        FROM users
+        WHERE employee_id = #{employeeId}
+    </select>
+
     <!-- 插入用戶 -->
     <insert id="insert" parameterType="com.example.hrstarter.entity.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users(username, password, full_name, enabled, employee_id)
@@ -121,10 +128,26 @@
         WHERE id = #{id}
     </select>
 
+    <update id="updateEmployeeBinding">
+        UPDATE users
+        SET employee_id = #{employeeId},
+            updated_at = NOW()
+        WHERE id = #{userId}
+          AND (employee_id IS NULL OR employee_id = #{employeeId})
+    </update>
+
     <!--查找所有用戶-->
     <select id="findAll" resultType="com.example.hrstarter.entity.User">
-        SELECT *
-        FROM users
+        SELECT
+            u.id,
+            u.username,
+            u.password,
+            u.full_name AS fullName,
+            u.enabled,
+            u.employee_id AS employeeId,
+            u.created_at AS createdAt,
+            u.updated_at AS updatedAt
+        FROM users u
     </select>
     <select id="count" resultType="java.lang.Long">
         SELECT COUNT(*)

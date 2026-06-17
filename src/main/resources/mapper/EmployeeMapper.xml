@@ -12,8 +12,8 @@
 
     <!-- 插入員工 -->
     <insert id="insert" parameterType="com.example.hrstarter.entity.Employee" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO employee(name, phone, email, title, emp_no, resign_date, hire_date)
-        VALUES (#{name}, #{phone}, #{email}, #{title}, #{empNo}, #{resignDate}, #{hireDate})
+        INSERT INTO employee(name, phone, email, title, emp_no, department_id, address, status, user_id, resign_date, hire_date)
+        VALUES (#{name}, #{phone}, #{email}, #{title}, #{empNo}, #{departmentId}, #{address}, COALESCE(#{status}, 1), #{userId}, #{resignDate}, #{hireDate})
     </insert>
 
     <!-- 根據 id 查找 -->
@@ -21,11 +21,21 @@
         SELECT * FROM employee WHERE id = #{id}
     </select>
 
+    <select id="findByUserId" resultType="com.example.hrstarter.entity.Employee">
+        SELECT * FROM employee WHERE user_id = #{userId}
+    </select>
+
     <!-- 更新員工資訊 (根據 id) -->
     <update id="update" parameterType="com.example.hrstarter.entity.Employee">
         UPDATE employee
         <set>
             <if test="name != null">name = #{name},</if>
+            <if test="empNo != null">emp_no = #{empNo},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="departmentId != null">department_id = #{departmentId},</if>
+            <if test="address != null">address = #{address},</if>
             <if test="status != null">status = #{status},</if>
 
             <choose>
@@ -44,6 +54,21 @@
             updated_at = CURRENT_TIMESTAMP
         </set>
            WHERE  id = #{id}
+    </update>
+
+    <update id="bindUser">
+        UPDATE employee
+        SET user_id = #{userId},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{employeeId}
+          AND (user_id IS NULL OR user_id = #{userId})
+    </update>
+
+    <update id="clearUserBindingByUserId">
+        UPDATE employee
+        SET user_id = NULL,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
     </update>
 
     <!-- 刪除員工 (根據 id) -->
@@ -124,6 +149,36 @@
         FROM employee e
         WHERE e.status =  1
         order by e.id
+    </select>
+
+    <select id="findUnbound" resultType="com.example.hrstarter.dto.employee.EmployeeDTO">
+        SELECT
+            e.id,
+            e.emp_no AS empNo,
+            e.user_id AS userId,
+            e.name,
+            e.department_id AS departmentId,
+            d.name AS departmentName,
+            e.title,
+            e.hire_date AS hireDate,
+            e.status,
+            e.email,
+            e.address,
+            e.phone,
+            e.birthday,
+            e.resign_date AS resignDate,
+            e.created_at AS createdAt,
+            e.updated_at AS updatedAt
+        FROM employee e
+                 LEFT JOIN departments d ON e.department_id = d.id
+        WHERE e.status = 1
+          AND e.user_id IS NULL
+          AND NOT EXISTS (
+              SELECT 1
+              FROM users u
+              WHERE u.employee_id = e.id
+          )
+        ORDER BY e.id DESC
     </select>
 
 

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class User {
@@ -26,6 +27,7 @@ public class User {
     /** 🔗 對應員工 */
     private Long employeeId;
     private Long version;
+    private List<Long> roleIds;
 //    public User() {
 //
 //    }

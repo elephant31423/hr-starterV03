@@ -7,8 +7,12 @@ import com.example.hrstarter.dto.employee.EmployeeDTO;
 import com.example.hrstarter.dto.employee.EmployeeQueryDTO;
 import com.example.hrstarter.entity.Employee;
 import com.example.hrstarter.entity.EmployeeAnnualLeaves;
+import com.example.hrstarter.entity.User;
+import com.example.hrstarter.exception.BusinessException;
 import com.example.hrstarter.mapper.EmployeeAnnualLeaveMapper;
 import com.example.hrstarter.mapper.EmployeeMapper;
+import com.example.hrstarter.mapper.UserMapper;
+import com.example.hrstarter.mapper.UserRoleMapper;
 import com.example.hrstarter.config.ConfigService;
 import com.example.hrstarter.service.EmployeeService;
 import com.example.hrstarter.service.LeaveCalculationService;
@@ -19,8 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -38,6 +45,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final LeaveCalculationService leaveCalculationService;
     private final Map<String, LeaveCalculationStrategy> strategyMap;
     private final ConfigService configService;
+    private final UserMapper userMapper;
+    private final UserRoleMapper userRoleMapper;
+    private final PasswordEncoder passwordEncoder;
 
 
     @PreAuthorize("hasAnyAuthority('employee:view')")
@@ -51,6 +61,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @PreAuthorize("hasAuthority('employee:view')")
     @Override
+    public List<EmployeeDTO> findUnbound() {
+        return employeeMapper.findUnbound();
+    }
+
+    @PreAuthorize("hasAuthority('employee:view')")
+    @Override
     public Employee findById(Long id) {
         return employeeMapper.findById(id);
     }
@@ -59,7 +75,39 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public void insert(Employee employee) {
+        if (employee.getHireDate() == null) {
+            throw BusinessException.badRequest("Hire date is required");
+        }
+
+        if (Boolean.TRUE.equals(employee.getCreateAccount())) {
+            validateAccountRequest(employee);
+            if (userMapper.findByUsername(employee.getUsername()) != null) {
+                throw BusinessException.conflict("登入帳號已存在");
+            }
+        }
+
         employeeMapper.insert(employee);
+
+        if (Boolean.TRUE.equals(employee.getCreateAccount())) {
+            User user = new User();
+            user.setUsername(employee.getUsername());
+            user.setPassword(passwordEncoder.encode(employee.getPassword()));
+            user.setFullName(employee.getName());
+            user.setEnabled(employee.getEnabled() == null ? true : employee.getEnabled());
+            user.setEmployeeId(employee.getId());
+            userMapper.insert(user);
+
+            if (!CollectionUtils.isEmpty(employee.getRoleIds())) {
+                userRoleMapper.batchInsertUserRoles(user.getId(), employee.getRoleIds());
+            }
+
+            int bound = employeeMapper.bindUser(employee.getId(), user.getId());
+            if (bound == 0) {
+                throw BusinessException.conflict("員工已綁定其他帳號");
+            }
+            employee.setUserId(user.getId());
+        }
+
         int currentYear = LocalDate.now().getYear();
         String systemType = configService.getValueByKey("LEAVE_SYSTEM_TYPE");
         LeaveCalculationStrategy strategy = strategyMap.get(systemType);
@@ -152,6 +200,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private BigDecimal calculateSeniority(LocalDateTime hireDate) {
         return null;
+    }
+
+    private void validateAccountRequest(Employee employee) {
+        if (!StringUtils.hasText(employee.getUsername())) {
+            throw BusinessException.badRequest("請輸入登入帳號");
+        }
+        if (!StringUtils.hasText(employee.getPassword())) {
+            throw BusinessException.badRequest("請輸入初始密碼");
+        }
     }
 
 

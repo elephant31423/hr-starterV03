@@ -10,6 +10,7 @@ public interface UserMapper {
     User findByUsername(String username);
 
     User findById(Long id);
+    User findByEmployeeId(Long employeeId);
 
     UserDetailDTO findByIdWithRolesAndPermissions(Long id);
 
@@ -17,6 +18,7 @@ public interface UserMapper {
     List<User> findAll();
 
     void insert(User user);
+    int updateEmployeeBinding(@org.apache.ibatis.annotations.Param("userId") Long userId, @org.apache.ibatis.annotations.Param("employeeId") Long employeeId);
 
 //    void update(User user);
 

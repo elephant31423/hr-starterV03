@@ -52,6 +52,8 @@ D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\LeaveRequ
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\NotificationService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\PermissionMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\controller\LeaveTypeController.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\SystemSettingServiceImpl.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\SystemSettingService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\entity\LeaveTypeEntity.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\listener\NotificationEventListener.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\LeaveCalculation\imp\CalendarStrategy.java
@@ -89,6 +91,7 @@ D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\PageData.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\PermissionService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\NotificationServiceImpl.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\LeaveCalculation\LeaveCalculationStrategy.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\controller\SystemSettingController.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\DashBoardService.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\LeaveRequestMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\UserDetailServiceImpl.java
@@ -101,6 +104,7 @@ D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\Leave
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\DashboardStatsDTO.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\DashBoardServiceImpl.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\employee\EmployeeDTO.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\entity\SystemSetting.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\AsyncLogServiceImpl.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\CalendarDayDTO.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\ShiftDTO.java
@@ -131,6 +135,7 @@ D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\entity\WorkSchedu
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\UserMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\EmployeeShiftsMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\RoleServiceImpl.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\system\BasicSettingsDTO.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\filter\EmployeeContextInterceptor.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\NotificationMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\RolePermissionServiceImpl.java
@@ -143,6 +148,8 @@ D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\enums\ErrorCode.j
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\LeaveCalculation\imp\AnniversaryStrategy.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\LeaveTypeServiceImpl.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\EmployeeAnnualLeaveMapper.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\dto\system\SecuritySettingsDTO.java
+D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\mapper\SystemSettingMapper.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\service\Imp\PermissionServiceImpl.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\util\IpUtils.java
 D:\workspace\hr-starterV03\src\main\java\com\example\hrstarter\HrStarterApplication.java

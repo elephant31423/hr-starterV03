@@ -15,8 +15,10 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
 
     List<EmployeeDTO> findAll();
     List<Employee> findAllActive();
+    List<EmployeeDTO> findUnbound();
 
     Employee findById(Long id);
+    Employee findByUserId(Long userId);
     Employee findByEmployeeName(String name);
 
     LocalDate findBirthday(Long employeeId);
@@ -30,6 +32,8 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
     IPage<Employee> findByParams(IPage<Employee> page,@Param("query") EmployeeQueryDTO queryDTO);
 
     void update(Employee employee);
+    int bindUser(@Param("employeeId") Long employeeId, @Param("userId") Long userId);
+    int clearUserBindingByUserId(@Param("userId") Long userId);
 
     void delete(Long id);
 

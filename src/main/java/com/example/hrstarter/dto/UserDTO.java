@@ -12,4 +12,7 @@ public class UserDTO implements Serializable {
     private Boolean enabled;
     private String createdAt;
     private String updatedAt;
+    private Long employeeId;
+    private String employeeName;
+    private String empNo;
 }

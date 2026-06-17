@@ -12,6 +12,7 @@ import java.util.List;
 public interface EmployeeService {
 
     List<EmployeeDTO> findAll();
+    List<EmployeeDTO> findUnbound();
 
     Employee findById(Long id);
 

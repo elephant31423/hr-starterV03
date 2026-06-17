@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Data
@@ -50,5 +51,19 @@ public class Employee {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
+    @TableField(exist = false)
+    private Boolean createAccount;
+
+    @TableField(exist = false)
+    private String username;
+
+    @TableField(exist = false)
+    private String password;
+
+    @TableField(exist = false)
+    private Boolean enabled;
+
+    @TableField(exist = false)
+    private List<Long> roleIds;
 
 }
