@@ -1,3 +1,17 @@
+CREATE TABLE IF NOT EXISTS permissions (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  permission_code VARCHAR(100) UNIQUE NOT NULL,
+  permission_name VARCHAR(100) NOT NULL,
+  description VARCHAR(255),
+  parent_id BIGINT NULL
+);
+
+CREATE TABLE IF NOT EXISTS role_permissions (
+  role_id BIGINT NOT NULL,
+  permission_id BIGINT NOT NULL,
+  PRIMARY KEY(role_id, permission_id)
+);
+
 CREATE TABLE IF NOT EXISTS leave_approval_steps (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   leave_request_id BIGINT NOT NULL,
