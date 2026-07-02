@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hrstarter.mapper.OvertimeRecordMapper">
+    <resultMap id="OvertimeRecordMap" type="com.example.hrstarter.entity.OvertimeRecord">
+        <id property="id" column="id"/>
+        <result property="overtimeRequestId" column="overtime_request_id"/>
+        <result property="employeeId" column="employee_id"/>
+        <result property="overtimeDate" column="overtime_date"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="hours" column="hours"/>
+        <result property="reason" column="reason"/>
+        <result property="approvedBy" column="approved_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="employeeName" column="employee_name"/>
+        <result property="approvedByName" column="approved_by_name"/>
+    </resultMap>
+
+    <sql id="RecordColumns">
+        orec.*,
+        e.name AS employee_name,
+        u.full_name AS approved_by_name
+    </sql>
+
+    <select id="findByEmployeeId" resultMap="OvertimeRecordMap">
+        SELECT <include refid="RecordColumns"/>
+        FROM overtime_records orec
+        LEFT JOIN employee e ON orec.employee_id = e.id
+        LEFT JOIN users u ON orec.approved_by = u.id
+        WHERE orec.employee_id = #{employeeId}
+        ORDER BY orec.overtime_date DESC, orec.created_at DESC
+    </select>
+
+    <select id="findAll" resultMap="OvertimeRecordMap">
+        SELECT <include refid="RecordColumns"/>
+        FROM overtime_records orec
+        LEFT JOIN employee e ON orec.employee_id = e.id
+        LEFT JOIN users u ON orec.approved_by = u.id
+        ORDER BY orec.overtime_date DESC, orec.created_at DESC
+    </select>
+</mapper>

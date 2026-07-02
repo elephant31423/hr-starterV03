@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hrstarter.mapper.SystemSettingMapper">
+
+    <select id="findByGroup" resultType="com.example.hrstarter.entity.SystemSetting">
+        SELECT id,
+               setting_group AS settingGroup,
+               setting_key AS settingKey,
+               setting_value AS settingValue,
+               value_type AS valueType,
+               description,
+               updated_by AS updatedBy,
+               created_at AS createdAt,
+               updated_at AS updatedAt
+        FROM system_settings
+        WHERE setting_group = #{settingGroup}
+        ORDER BY setting_key
+    </select>
+
+    <insert id="upsert" parameterType="com.example.hrstarter.entity.SystemSetting">
+        INSERT INTO system_settings (
+            setting_group,
+            setting_key,
+            setting_value,
+            value_type,
+            description,
+            updated_by
+        )
+        VALUES (
+            #{settingGroup},
+            #{settingKey},
+            #{settingValue},
+            #{valueType},
+            #{description},
+            #{updatedBy}
+        )
+        ON DUPLICATE KEY UPDATE
+            setting_group = VALUES(setting_group),
+            setting_value = VALUES(setting_value),
+            value_type = VALUES(value_type),
+            description = VALUES(description),
+            updated_by = VALUES(updated_by)
+    </insert>
+</mapper>
