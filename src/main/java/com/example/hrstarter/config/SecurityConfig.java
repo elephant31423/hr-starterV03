@@ -65,7 +65,7 @@ public class SecurityConfig {
                 )
                 // 授權配置
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/actuator/**", "/swagger-ui/**", "/v3/api-docs/**","/ws-hr/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/system-settings/branding", "/uploads/**", "/actuator/**", "/swagger-ui/**", "/v3/api-docs/**","/ws-hr/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 // 添加 JWT 過濾器
