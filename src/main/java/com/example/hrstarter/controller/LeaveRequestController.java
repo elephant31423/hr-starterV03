@@ -124,7 +124,7 @@ public class LeaveRequestController {
         log.info("更新請假申請：ID={}", id);
 
         leaveRequest.setId(id);
-        boolean updated = leaveRequestService.updateById(leaveRequest);
+        boolean updated = leaveRequestService.updatePendingByApplicant(id, leaveRequest);
 
         return ApiResponse.success("更新成功", true);
 
@@ -139,7 +139,7 @@ public class LeaveRequestController {
             @PathVariable Long id) {
         log.info("刪除請假申請：ID={}", id);
 
-        boolean deleted = leaveRequestService.removeById(id);
+        boolean deleted = leaveRequestService.cancelPendingByApplicant(id);
 
         return ApiResponse.success("刪除成功", true);
 

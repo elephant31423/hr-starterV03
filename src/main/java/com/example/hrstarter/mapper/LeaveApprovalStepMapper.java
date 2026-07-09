@@ -23,4 +23,6 @@ public interface LeaveApprovalStepMapper {
     int reject(@Param("id") Long id, @Param("userId") Long userId, @Param("comment") String comment);
 
     int markPending(@Param("id") Long id);
+
+    int cancelByLeaveRequestId(@Param("leaveRequestId") Long leaveRequestId);
 }

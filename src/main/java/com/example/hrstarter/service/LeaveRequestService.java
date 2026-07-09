@@ -101,6 +101,10 @@ public interface LeaveRequestService extends IService<LeaveRequest> {
 
     void applyLeave(LeaveRequest request);
 
+    boolean updatePendingByApplicant(Long leaveRequestId, LeaveRequest request);
+
+    boolean cancelPendingByApplicant(Long leaveRequestId);
+
     void updateApprovalStatus(Long leaveRequestId, String status);
 
     void finalizeApprovedLeave(Long leaveRequestId, Long approvedBy);

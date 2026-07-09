@@ -136,4 +136,12 @@
         WHERE id = #{id}
           AND status = 'WAITING'
     </update>
+
+    <update id="cancelByLeaveRequestId">
+        UPDATE leave_approval_steps
+        SET status = 'CANCELLED',
+            approved_at = NULL
+        WHERE leave_request_id = #{leaveRequestId}
+          AND status IN ('PENDING', 'WAITING')
+    </update>
 </mapper>

@@ -8,6 +8,7 @@ import com.example.hrstarter.dto.LeaveRequestDTO;
 import com.example.hrstarter.entity.LeaveRecord;
 import com.example.hrstarter.entity.LeaveRequest;
 import com.example.hrstarter.entity.LeaveTypeEntity;
+import com.example.hrstarter.mapper.LeaveApprovalStepMapper;
 import com.example.hrstarter.mapper.LeaveRequestMapper;
 import com.example.hrstarter.mapper.LeaveTypeMapper;
 import com.example.hrstarter.service.EmployeeAnnualLeaveService;
@@ -40,6 +41,9 @@ public class LeaveRequestServiceImpl extends ServiceImpl<LeaveRequestMapper, Lea
 
     @Autowired
     private LeaveTypeMapper leaveTypeMapper;
+
+    @Autowired
+    private LeaveApprovalStepMapper leaveApprovalStepMapper;
 
     @Autowired
     private ConfigService configService;
@@ -197,6 +201,41 @@ public class LeaveRequestServiceImpl extends ServiceImpl<LeaveRequestMapper, Lea
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updatePendingByApplicant(Long leaveRequestId, LeaveRequest request) {
+        LeaveRequest existing = getApplicantEditableRequest(leaveRequestId);
+
+        existing.setLeaveTypeId(request.getLeaveTypeId());
+        existing.setStartDate(request.getStartDate());
+        existing.setEndDate(request.getEndDate());
+        existing.setLeaveHours(request.getLeaveHours());
+        existing.setReason(request.getReason());
+
+        String validationResult = validateLeaveRequest(existing);
+        if (validationResult != null) {
+            throw new RuntimeException(validationResult);
+        }
+
+        long daysBetween = ChronoUnit.DAYS.between(existing.getStartDate(), existing.getEndDate()) + 1;
+        existing.setDays(BigDecimal.valueOf(daysBetween));
+        if (existing.getLeaveHours() == null || existing.getLeaveHours().compareTo(BigDecimal.ZERO) <= 0) {
+            existing.setLeaveHours(calculateLeaveHours(existing));
+        }
+
+        return this.updateById(existing);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean cancelPendingByApplicant(Long leaveRequestId) {
+        LeaveRequest existing = getApplicantEditableRequest(leaveRequestId);
+        existing.setStatus("CANCELLED");
+        boolean updated = this.updateById(existing);
+        leaveApprovalStepMapper.cancelByLeaveRequestId(leaveRequestId);
+        return updated;
+    }
+
+    @Override
     public void updateApprovalStatus(Long leaveRequestId, String status) {
         LeaveRequest leaveRequest = this.getById(leaveRequestId);
         if (leaveRequest == null) {
@@ -328,5 +367,23 @@ public class LeaveRequestServiceImpl extends ServiceImpl<LeaveRequestMapper, Lea
             return new BigDecimal("8");
         }
         return hoursPerDay;
+    }
+
+    private LeaveRequest getApplicantEditableRequest(Long leaveRequestId) {
+        LeaveRequest existing = this.getById(leaveRequestId);
+        if (existing == null) {
+            throw new RuntimeException("請假申請不存在");
+        }
+
+        Long currentEmployeeId = SecurityUtils.getEmployeeId();
+        if (currentEmployeeId == null || !currentEmployeeId.equals(existing.getEmployeeId())) {
+            throw new RuntimeException("只能修改或取消自己的請假申請");
+        }
+
+        if (!"PENDING_DEPARTMENT".equals(existing.getStatus())) {
+            throw new RuntimeException("請假申請已進入審核流程，不能再修改或取消");
+        }
+
+        return existing;
     }
 }
