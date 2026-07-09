@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -43,19 +44,22 @@ public class RateLimitAspect {
 
         String key = "ratelimit:" + ip + ":" + methodName;
 
-        // 2. 執行 Redis 遞增操作 (原子性)
-        Long currentCount = redisTemplate.opsForValue().increment(key);
+        try {
+            // 2. 執行 Redis 遞增操作 (原子性)
+            Long currentCount = redisTemplate.opsForValue().increment(key);
 
-        if (currentCount != null && currentCount == 1) {
-            // 如果是第一次請求，設定過期時間
-            redisTemplate.expire(key, time, TimeUnit.SECONDS);
-        }
+            if (currentCount != null && currentCount == 1) {
+                // 如果是第一次請求，設定過期時間
+                redisTemplate.expire(key, time, TimeUnit.SECONDS);
+            }
 
-        // 3. 判斷是否超過限制
-        if (currentCount != null && currentCount > count) {
-            log.warn("🚨 API 限流觸發! IP: {}, 方法: {}, 次數: {}, 嘗試帳號: {}", ip, methodName, currentCount, username);
-            // 拋出異常 (建議由 GlobalExceptionHandler 捕獲，回傳 429 狀態碼)
-            throw new RateLimitException(rateLimit.message());
+            // 3. 判斷是否超過限制
+            if (currentCount != null && currentCount > count) {
+                log.warn("API 限流觸發! IP: {}, 方法: {}, 次數: {}, 嘗試帳號: {}", ip, methodName, currentCount, username);
+                throw new RateLimitException(rateLimit.message());
+            }
+        } catch (DataAccessException e) {
+            log.warn("Redis 限流暫時不可用，放行本次請求。key={}", key, e);
         }
 
         return joinPoint.proceed();

@@ -7,6 +7,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +23,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 
 @Component
+@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtil;
@@ -53,11 +56,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 // 1. 新增：檢查 Redis 黑名單 (Denylist)
                 String cacheKey = "jwt:denylist:" + token;
-                if (Boolean.TRUE.equals(redisTemplate.hasKey(cacheKey))) {
-                    // 若在黑名單中，直接視為無效，清除 Context 並進入下一個 Filter (或拋出異常)
-                    SecurityContextHolder.clearContext();
-                    chain.doFilter(request, response);
-                    return;
+                try {
+                    if (Boolean.TRUE.equals(redisTemplate.hasKey(cacheKey))) {
+                        // 若在黑名單中，直接視為無效，清除 Context 並進入下一個 Filter (或拋出異常)
+                        SecurityContextHolder.clearContext();
+                        chain.doFilter(request, response);
+                        return;
+                    }
+                } catch (DataAccessException e) {
+                    log.warn("Redis JWT 黑名單暫時不可用，改用 JWT 本身驗證。path={}", path, e);
                 }
 
                 // 2. 原本的 JWT 驗證與解析邏輯
@@ -99,6 +106,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 
 }
-
 
 
