@@ -15,7 +15,7 @@
             employee_id,
             leave_date,
             leave_type,
-            hours
+            leave_hours
         FROM leave_records
         WHERE employee_id = #{employeeId}
           AND leave_date BETWEEN #{startDate} AND #{endDate}
@@ -47,7 +47,7 @@
                OR (start_date &lt;= #{startDate} AND end_date &gt;= #{endDate}))
     </select>
     <select id="sumLeaveHours" resultType="java.math.BigDecimal">
-        SELECT SUM(hours)
+        SELECT SUM(leave_hours)
         FROM leave_records
         WHERE employee_id = #{employeeId}
           AND leave_type = #{leaveType}

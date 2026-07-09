@@ -10,7 +10,7 @@
     </insert>
     <update id="useLeave">
         UPDATE employee_annual_leaves
-        SET used_leave_days = used_leave_days + #{days}, remaining_leave_days = remaining_leave_days - #{days}
+        SET used_hours = used_hours + #{days}, remain_hours = remain_hours - #{days}
         WHERE employee_id = #{employeeId} AND year = #{year}
     </update>
 
@@ -27,8 +27,8 @@
     </select>
     <update id="updateUsedDays">
         UPDATE employee_annual_leaves
-        SET used_leave_days = #{usedLeaveDays}, remaining_leave_days = #{remainingLeaveDays}
-        WHERE employee_id = #{employeeId} AND year = #{year}
+        SET used_hours = #{usedDays}, remain_hours = #{remainDays}
+        WHERE id = #{id}
     </update>
     <select id="selectByEmployeeIdAndYear" resultType="com.example.hrstarter.entity.EmployeeAnnualLeaves">
         SELECT *

@@ -102,7 +102,7 @@ public interface EmployeeAnnualLeaveMapper extends BaseMapper<EmployeeAnnualLeav
      * @param year 年份
      * @return 數量
      */
-    @Select("SELECT COUNT(*) FROM employee_annual_leaves WHERE year = #{year} AND remain_days < 5")
+    @Select("SELECT COUNT(*) FROM employee_annual_leaves WHERE year = #{year} AND remain_hours < 40")
     Integer countLowRemainDays(@Param("year") Integer year);
 
     /**
@@ -111,7 +111,7 @@ public interface EmployeeAnnualLeaveMapper extends BaseMapper<EmployeeAnnualLeav
      * @param year 年份
      * @return 數量
      */
-    @Select("SELECT COUNT(*) FROM employee_annual_leaves WHERE year = #{year} AND remain_days = 0")
+    @Select("SELECT COUNT(*) FROM employee_annual_leaves WHERE year = #{year} AND remain_hours = 0")
     Integer countNoRemainDays(@Param("year") Integer year);
 
     /**

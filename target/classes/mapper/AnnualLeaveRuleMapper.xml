@@ -6,12 +6,12 @@
     <update id="updateAnnualLeaveRule">
 
         UPDATE employee_annual_leaves
-        SET remaining_leave_hours = remaining_leave_hours - #{hours}
+        SET remain_hours = remain_hours - #{hours}
         WHERE
               <![CDATA[
             employee_id = #{employeeId}
           AND year = YEAR(CURDATE())
-          AND remaining_leave_hours >= #{hours}
+          AND remain_hours >= #{hours}
         ]]>
     </update>
 
