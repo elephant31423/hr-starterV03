@@ -20,19 +20,20 @@
     <select id="findByDateRange" resultType="com.example.hrstarter.entity.Holiday">
         SELECT *
         FROM holidays
-        WHERE date BETWEEN #{startDate} AND #{endDate}
-        ORDER BY date
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+        ORDER BY `date`
     </select>
 
     <insert id="insert" parameterType="com.example.hrstarter.entity.Holiday">
-        INSERT INTO holidays(holiday_name, holiday_date)
-        VALUES(#{holidayName}, #{holidayDate})
+        INSERT INTO holidays(`name`, `date`, is_national)
+        VALUES(#{name}, #{date}, #{isNational})
     </insert>
 
     <update id="update" parameterType="com.example.hrstarter.entity.Holiday">
         UPDATE holidays
-        SET holiday_name = #{holidayName},
-            holiday_date = #{holidayDate}
+        SET `name` = #{name},
+            `date` = #{date},
+            is_national = #{isNational}
         WHERE id = #{id}
     </update>
 
