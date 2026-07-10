@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
@@ -39,21 +40,32 @@ public class RepeatSubmitAspect {
         String paramsMd5 = DigestUtils.md5DigestAsHex(params.getBytes());
         String key = "repeat_submit:" + ip + ":" + url + ":" + paramsMd5;
 
-        // 2. 嘗試存入 Redis (SETNX)
-        // setIfAbsent 回傳 true 代表之前沒這組 Key，存入成功；回傳 false 代表已存在
-        Boolean isAbsent = redisTemplate.opsForValue().setIfAbsent(key, "locked", noRepeatSubmit.lockTime(), TimeUnit.SECONDS );
+        boolean lockCreated = false;
+        try {
+            // 2. 嘗試存入 Redis (SETNX)
+            // setIfAbsent 回傳 true 代表之前沒這組 Key，存入成功；回傳 false 代表已存在
+            Boolean isAbsent = redisTemplate.opsForValue().setIfAbsent(key, "locked", noRepeatSubmit.lockTime(), TimeUnit.SECONDS);
+            lockCreated = Boolean.TRUE.equals(isAbsent);
 
-        if (Boolean.FALSE.equals(isAbsent)) {
-            log.warn("🛑 偵測到重複提交: {}", key);
-            // 這裡建議拋出自定義異常，或複用之前的 RateLimitException
-            throw new RuntimeException(noRepeatSubmit.message());
+            if (Boolean.FALSE.equals(isAbsent)) {
+                log.warn("偵測到重複提交: {}", key);
+                throw new RuntimeException(noRepeatSubmit.message());
+            }
+        } catch (DataAccessException e) {
+            log.warn("Redis 防重複提交暫時不可用，放行本次請求。key={}", key, e);
         }
 
         try {
             return joinPoint.proceed();
         } catch (Throwable e) {
             // 如果執行過程中出錯，通常我們會選擇刪除 Key，讓使用者可以立即重試
-            redisTemplate.delete(key);
+            if (lockCreated) {
+                try {
+                    redisTemplate.delete(key);
+                } catch (DataAccessException redisException) {
+                    log.warn("Redis 防重複提交解鎖失敗。key={}", key, redisException);
+                }
+            }
             throw e;
         }
     }

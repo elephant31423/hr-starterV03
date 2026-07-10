@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -32,10 +33,14 @@ public class DashBoardServiceImpl implements DashBoardService {
     @Override
     public DashboardStatsDTO getDashboardStats() {
         // 1. 嘗試從 Redis 拿
-        DashboardStatsDTO stats = (DashboardStatsDTO) redisTemplate.opsForValue().get(CACHE_KEY);
-        if (stats != null) {
-            log.info("🚀 命中 Redis 緩存");
-            return stats;
+        try {
+            DashboardStatsDTO stats = (DashboardStatsDTO) redisTemplate.opsForValue().get(CACHE_KEY);
+            if (stats != null) {
+                log.info("命中 Redis 緩存");
+                return stats;
+            }
+        } catch (DataAccessException e) {
+            log.warn("Redis 儀表板快取讀取失敗，改從資料庫查詢。key={}", CACHE_KEY, e);
         }
         Long employeeCount = employeeMapper.count();
         Long permissionCount = permissionMapper.count();
@@ -66,7 +71,11 @@ public class DashBoardServiceImpl implements DashBoardService {
         newStats.setActiveUsers(activeUsers);
         newStats.setVacationCount(todayVacation);
 
-        redisTemplate.opsForValue().set(CACHE_KEY, newStats, 10, TimeUnit.MINUTES);
+        try {
+            redisTemplate.opsForValue().set(CACHE_KEY, newStats, 10, TimeUnit.MINUTES);
+        } catch (DataAccessException e) {
+            log.warn("Redis 儀表板快取寫入失敗，略過快取。key={}", CACHE_KEY, e);
+        }
 
 
         return newStats;
@@ -76,15 +85,19 @@ public class DashBoardServiceImpl implements DashBoardService {
      * 提供給外部調用的「刷緩存」方法
      */
     public void clearCache() {
-        redisTemplate.delete(CACHE_KEY);
-        log.info("📌 已主動清除儀表板緩存");
+        try {
+            redisTemplate.delete(CACHE_KEY);
+            log.info("已主動清除儀表板緩存");
+        } catch (DataAccessException e) {
+            log.warn("Redis 儀表板快取清除失敗，略過。key={}", CACHE_KEY, e);
+        }
     }
 
     @EventListener
     public void handleShiftChanged(EmployeeShiftServiceImpl.ShiftChangedEvent event) {
         if (LocalDate.now().equals(event.date())) {
             this.clearCache(); // 只有今天的變動才刷儀表板
-            log.info("🔔 收到 ShiftChangedEvent，日期：{}，已清除儀表板緩存", event.date());
+            log.info("收到 ShiftChangedEvent，日期：{}，已清除儀表板緩存", event.date());
         }
     }
 }
